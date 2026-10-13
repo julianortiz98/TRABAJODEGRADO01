@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de transformador de poste</title>
+<style>
+:root{--bg:#eaf0f4;--card:#fff;--ink:#1b2a38;--mut:#5d6e7e;--line:#cfd9e2;--c110:#0f8b8d;--c220:#c9803a;--ok:#2e8b57;--warn:#d9a400;--hi:#e27a1b;--bad:#c0392b;--coil:#c9803a;--core:#6b7785;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1620;--card:#15222f;--ink:#e6edf4;--mut:#93a5b6;--line:#2a3b4c;--core:#8d99a6}}
+:root[data-theme="dark"]{--bg:#0d1620;--card:#15222f;--ink:#e6edf4;--mut:#93a5b6;--line:#2a3b4c;--core:#8d99a6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:16px 14px 28px}
+h1{font-size:1.45rem;margin:4px 0 2px;letter-spacing:-.01em}
+.sub{color:var(--mut);margin:0 0 14px;max-width:62ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.top{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}
+@media(max-width:780px){.top{grid-template-columns:1fr}}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--ink);font:600 13px "Avenir Next","Segoe UI",system-ui,sans-serif}
+.w{stroke:var(--mut);stroke-width:3;fill:none;stroke-linecap:round}
+.coil{fill:none;stroke-width:5;stroke-linejoin:round}
+.l1{stroke:var(--c110)}.l2{stroke:var(--c110)}.ln{stroke:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.stat{border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+.stat b{display:block;font-size:1.15rem}.stat span{color:var(--mut);font-size:.8rem}
+.bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s,background .3s}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;color:#fff;font-weight:700;background:var(--ok)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+button,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer}
+button:focus-visible,select:focus-visible{outline:3px solid var(--c110);outline-offset:2px}
+.sp{flex:1}
+#houses{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.house h3{margin:0 0 6px;font-size:1rem}
+.flow{height:7px;border-radius:4px;margin:2px 0 10px;background:repeating-linear-gradient(90deg,var(--c110) 0 9px,transparent 9px 18px);background-size:18px 100%;animation:mv var(--d,1s) linear infinite}
+@keyframes mv{to{background-position:18px 0}}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{text-align:left;padding:6px 8px;border-width:2px;line-height:1.2}
+.chip small{display:block;color:var(--mut);font-size:.74rem}
+.v110{border-color:var(--c110)}.v220{border-color:var(--c220)}
+.chip[aria-pressed=true]{color:#fff}.chip[aria-pressed=true] small{color:#ffffffcc}
+.v110[aria-pressed=true]{background:var(--c110)}.v220[aria-pressed=true]{background:var(--c220)}
+.sum{margin:9px 0 0;font-size:.88rem;color:var(--mut)}
+.why{margin-top:12px}.why p{margin:.4em 0;max-width:80ch}
+@media(prefers-reduced-motion:reduce){.flow{animation:none}}
+</style>
+</head>
+<body>
+<main>
+<h1>Un transformador de poste y las casas que alimenta</h1>
+<p class="sub">Enciende aparatos en cada casa y mira qué pasa en el transformador: cuánta corriente reparte, cuánto se calienta y cuándo conviene una alerta.</p>
+
+<div class="top">
+  <section class="card" aria-label="Transformador">
+    <svg viewBox="0 0 390 175" role="img" aria-label="Transformador con entrada de 13 200 voltios y salida de 220 y 110 voltios">
+      <text x="2" y="24">13 200 V</text>
+      <path class="w" d="M2 40H70M2 135H70"/>
+      <rect id="cA" class="coil" x="70" y="30" width="34" height="115" rx="9" stroke="var(--coil)"/>
+      <rect x="112" y="20" width="14" height="135" rx="3" fill="var(--core)"/>
+      <rect id="cB" class="coil" x="134" y="30" width="34" height="115" rx="9" stroke="var(--coil)"/>
+      <path class="w l1" d="M168 42H300"/><path class="w ln" d="M168 88H300"/><path class="w l2" d="M168 134H300"/>
+      <text x="306" y="47">L1</text><text x="306" y="93">N</text><text x="306" y="139">L2</text>
+      <text id="v1" x="200" y="34">110 V</text><text id="v2" x="200" y="126" dy="22">110 V</text>
+      <path class="w" d="M352 42V134M346 42h6M346 134h6" style="stroke:var(--c220)"/>
+      <text id="v220" x="334" y="92" text-anchor="end" style="fill:var(--c220)">220 V</text>
+    </svg>
+    <div class="stats">
+      <div class="stat"><b id="i1">0</b><span>Corriente en L1 (A)</span></div>
+      <div class="stat"><b id="i2">0</b><span>Corriente en L2 (A)</span></div>
+      <div class="stat"><b id="in">0</b><span>Neutro (A)</span></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Estado del transformador">
+    <label>Capacidad del transformador <select id="kva"><option>15</option><option selected>25</option><option>37.5</option><option>50</option><option>75</option></select> kVA</label>
+    <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+    <div><b id="pct">0 %</b> de su capacidad en uso. Entrada primaria: <b id="ip">0</b> A</div>
+    <div class="stats">
+      <div class="stat"><b id="oil">30 °C</b><span>Aceite superior</span></div>
+      <div class="stat"><b id="hs">30 °C</b><span>Punto caliente</span></div>
+      <div class="stat"><b id="faa">1×</b><span>Desgaste del aislamiento</span></div>
+    </div>
+    <p style="margin:12px 0 0"><span class="pill" id="pill">Normal</span> <span id="msg"></span></p>
+  </section>
+</div>
+
+<div class="row">
+  <button data-p="0">Madrugada</button><button data-p="1">Hora de la cena</button><button data-p="2">Todo encendido</button><button data-p="3">Apagar todo</button>
+  <span class="sp"></span>
+  <button id="add">Agregar casa</button><button id="del">Quitar casa</button>
+</div>
+<div id="houses"></div>
+
+<section class="card why" aria-label="Cómo lo reparte">
+  <h2 style="margin:0 0 4px;font-size:1.05rem">¿Cómo “reparte” el voltaje?</h2>
+  <p>No lo reparte: lo fija. La relación de vueltas (13 200 V a 220 V, unas 60 a 1) hace que entre L1 y L2 haya siempre cerca de 220 V, y entre cada línea y el neutro cerca de 110 V. Lo que cambia con cada casa es la <b>corriente</b>: cada aparato toma I = P / V.</p>
+  <p>Un aparato de 110 V usa una línea y el neutro. Uno de 220 V usa las dos líneas. Si las casas cargan más una línea que la otra, el neutro lleva la diferencia. Cuando la suma supera los kVA del transformador, el aceite y los devanados se calientan, el aislamiento envejece más rápido y el voltaje baja un poco.</p>
+  <p style="color:var(--mut)">Eso es lo que vigila un gemelo digital: con la carga calcula temperatura y envejecimiento y avisa antes del daño. Modelo simplificado: aparatos resistivos, ambiente de 30 °C, ecuaciones de régimen estable con inercia térmica simulada.</p>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),f=(n,d=1)=>n.toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const AP=[["💡","Luces",110,100],["📺","Televisor",110,150],["🧊","Nevera",110,200],["🍲","Microondas",110,1200],["👕","Plancha",110,1000],["❄️","Aire acondicionado",220,1800],["🔥","Estufa eléctrica",220,3000],["🚿","Ducha eléctrica",220,4500]];
+const PRE=[[1,0,1,0,0,0,0,0],[1,1,1,1,0,0,1,0],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0]];
+let H=[[1,1,1,0,0,0,0,0],[1,0,1,0,0,0,1,0],[1,1,0,0,0,0,0,0]],oil=30,hs=30,C={P:0,I1:0,I2:0};
+function calc(){let I1=0,I2=0,P=0;const per=H.map((h,i)=>{let a=0,b=0,p=0;h.forEach((on,j)=>{if(!on)return;const V=AP[j][2],W=AP[j][3],I=W/V;p+=W;if(V==220){a+=I;b+=I}else if((i+j)%2)b+=I;else a+=I});I1+=a;I2+=b;P+=p;return{a,b,p}});return{I1,I2,P,per}}
+function draw(){C=calc();
+ $('#houses').innerHTML=H.map((h,i)=>{const q=C.per[i],d=Math.max(.3,1.6-Math.min(q.p/8000,1)*1.3);
+  return `<section class="card house"><h3>🏠 Casa ${i+1}</h3><div class="flow" style="--d:${d}s;opacity:${q.p?1:.15}"></div><div class="chips">${AP.map((x,j)=>`<button class="chip v${x[2]}" aria-pressed="${!!h[j]}" data-i="${i}" data-j="${j}">${x[0]} ${x[1]}<small>${x[2]} V, ${x[3]} W</small></button>`).join('')}</div><p class="sum">Consume ${f(q.p/1000,2)} kW. Línea 1: ${f(q.a)} A. Línea 2: ${f(q.b)} A.</p></section>`}).join('');
+ stats()}
+function stats(){const kva=+$('#kva').value,K=C.P/(kva*1000),V220=220*(1-.035*Math.min(K,2));
+ const to=30+55*Math.pow((1+5*K*K)/6,.8),th=to+23*Math.pow(K,1.6);
+ $('#i1').textContent=f(C.I1);$('#i2').textContent=f(C.I2);$('#in').textContent=f(Math.abs(C.I1-C.I2));
+ $('#v220').textContent=f(V220,0)+' V';$('#v1').textContent=f(V220/2,0)+' V';$('#v2').textContent=f(V220/2,0)+' V';
+ $('#ip').textContent=f(C.P/13200,2);$('#pct').textContent=f(K*100,0)+' %';
+ const lv=hs<98?['var(--ok)','Normal','Opera con holgura.']:hs<110?['var(--warn)','Atención','Cerca del límite térmico: conviene vigilar.']:hs<130?['var(--hi)','Alerta','Sobrecarga: el aislamiento envejece más rápido.']:['var(--bad)','Crítico','Sobrecarga severa: hay que reducir la carga ya.'];
+ const b=$('#bar');b.style.width=Math.min(K*100,100)+'%';b.style.background=lv[0];
+ $('#oil').textContent=f(oil,0)+' °C';$('#hs').textContent=f(hs,0)+' °C';$('#faa').textContent=f(Math.exp(15000/383-15000/(hs+273)),hs>110?1:2)+'×';
+ const p=$('#pill');p.textContent=lv[1];p.style.background=lv[0];$('#msg').textContent=lv[2];
+ ['cA','cB'].forEach(id=>$('#'+id).style.stroke=lv[0]==='var(--ok)'?'var(--coil)':lv[0]);
+ $('#tgt').dataset.t=to+','+th}
+function lag(){const kva=+$('#kva').value,K=C.P/(kva*1000),to=30+55*Math.pow((1+5*K*K)/6,.8),th=to+23*Math.pow(K,1.6);oil+=(to-oil)*.07;hs+=(th-hs)*.07;stats()}
+document.body.insertAdjacentHTML('beforeend','<i id="tgt" hidden></i>');
+$('#houses').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;H[+b.dataset.i][+b.dataset.j]^=1;draw()});
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{H=H.map(()=>PRE[+b.dataset.p].slice());draw()});
+$('#add').onclick=()=>{if(H.length<6){H.push(PRE[0].slice());draw()}};
+$('#del').onclick=()=>{if(H.length>1){H.pop();draw()}};
+$('#kva').onchange=stats;
+draw();setInterval(lag,150);
+</script>
+</body>
+</html>
