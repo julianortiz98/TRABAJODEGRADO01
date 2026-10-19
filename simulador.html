@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de transformador de poste</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<style>
+:root{--bg:#eaf0f4;--card:#fff;--ink:#1b2a38;--mut:#5d6e7e;--line:#cfd9e2;--c110:#0f8b8d;--c220:#c9803a;--ok:#2e8b57;--warn:#d9a400;--hi:#e27a1b;--bad:#c0392b;--coil:#c9803a;--core:#6b7785;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1620;--card:#15222f;--ink:#e6edf4;--mut:#93a5b6;--line:#2a3b4c;--core:#8d99a6}}
+:root[data-theme="dark"]{--bg:#0d1620;--card:#15222f;--ink:#e6edf4;--mut:#93a5b6;--line:#2a3b4c;--core:#8d99a6}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:16px 14px 28px}
+h1{font-size:1.45rem;margin:4px 0 2px;letter-spacing:-.01em}
+.sub{color:var(--mut);margin:0 0 14px;max-width:66ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.mt{margin-top:12px}
+h2.ch{margin:0 0 8px;font-size:1.05rem}
+.top{display:grid;grid-template-columns:1.2fr 1fr;gap:12px}
+@media(max-width:800px){.top{grid-template-columns:1fr}}
+svg{width:100%;height:auto;display:block}
+svg text{fill:var(--ink);font:600 12.5px "Avenir Next","Segoe UI",system-ui,sans-serif}
+.w{stroke:var(--mut);stroke-width:3.5;fill:none;stroke-linecap:round}
+.l1,.l2{stroke:var(--c110)}.ln{stroke:var(--mut)}
+.fl{stroke:#fff;stroke-width:3;stroke-dasharray:2 12;fill:none;stroke-linecap:round;animation:dash var(--d,1s) linear infinite}
+@keyframes dash{to{stroke-dashoffset:-14}}
+.coil{fill:none;stroke-width:5;stroke-linejoin:round}
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+@media(max-width:560px){.stats4{grid-template-columns:repeat(2,1fr)}}
+.stat{border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+.stat b{display:block;font-size:1.05rem}.stat span{color:var(--mut);font-size:.78rem;display:block}
+.mini{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px}
+.mini i{display:block;height:100%;width:0;background:var(--c110);transition:width .15s linear}
+.gwrap{max-width:300px;margin:0 auto}
+.gr{text-align:center;margin-top:-6px}.gr b{font-size:1.9rem;display:block;line-height:1.1}.gr span{color:var(--mut)}
+.cap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0 0}
+.th{margin-top:10px}.thh{display:flex;justify-content:space-between}
+.tb{position:relative;height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin:4px 0 2px}
+.tb i{display:block;height:100%;width:0;background:var(--ok);transition:width .15s linear,background .3s}
+.tb u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink);opacity:.45}
+.small{color:var(--mut);font-size:.8rem}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;color:#fff;font-weight:700;background:var(--ok)}
+.trend{margin:8px 0 0;font-size:.92rem}
+.dayc{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin:0 0 8px}
+.clk{font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums;min-width:3.6em}
+.mode{color:var(--mut);font-size:.88rem}
+.tl{height:6px;border-radius:3px;background:var(--line);position:relative;margin:2px 0 12px}
+.tl i{position:absolute;top:-4px;width:4px;height:14px;background:var(--ink);border-radius:2px;left:0}
+.lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.82rem;color:var(--mut);margin:0 0 6px}
+.lg span{display:inline-flex;align-items:center;gap:5px}.lg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+#cv{width:100%;height:300px;display:block}
+.sb{position:relative;height:26px;border-radius:7px;background:var(--line);overflow:hidden;display:flex}
+.sb i{flex:0 0 auto;height:100%}
+.sb::after{content:"";position:absolute;left:71.43%;right:0;top:0;bottom:0;background:repeating-linear-gradient(45deg,#c0392b44 0 6px,transparent 6px 12px);pointer-events:none}
+.sm{position:absolute;left:71.43%;top:0;bottom:0;width:2px;background:var(--ink)}
+.sl{position:relative;height:18px;font-size:.78rem;color:var(--mut)}.sl span{position:absolute;top:2px}
+table.sh{border-collapse:collapse;width:100%;margin-top:8px;font-size:.9rem}
+.sh th,.sh td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right}
+.sh th:first-child,.sh td:first-child{text-align:left}.sh th{color:var(--mut);font-weight:600}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+button,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 11px;cursor:pointer}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--c110);outline-offset:2px}
+.sp{flex:1}
+#houses{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.house{border-top:4px solid var(--hc)}
+.house h3{margin:0 0 4px;font-size:1rem}
+.pw{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.pw b{font-size:1.5rem}.pw span{color:var(--mut);font-size:.9rem}
+.hbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:4px 0 8px}.hbar i{display:block;height:100%;background:var(--hc)}
+.flow{height:7px;border-radius:4px;margin:2px 0 10px;background:repeating-linear-gradient(90deg,var(--c110) 0 9px,transparent 9px 18px);background-size:18px 100%;animation:mv var(--d,1s) linear infinite}
+@keyframes mv{to{background-position:18px 0}}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chip{text-align:left;padding:6px 8px;border-width:2px;line-height:1.2}
+.chip small{display:block;color:var(--mut);font-size:.74rem}
+.v110{border-color:var(--c110)}.v220{border-color:var(--c220)}
+.chip[aria-pressed=true]{color:#fff}.chip[aria-pressed=true] small{color:#ffffffcc}
+.v110[aria-pressed=true]{background:var(--c110)}.v220[aria-pressed=true]{background:var(--c220)}
+.sum{margin:9px 0 0;font-size:.88rem;color:var(--mut)}
+.why p{margin:.4em 0;max-width:80ch}
+details{margin-top:8px}summary{cursor:pointer;font-weight:700}
+details dl{margin:6px 0 0;display:grid;grid-template-columns:max-content 1fr;gap:4px 14px}
+details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
+@media(max-width:560px){details dl{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.flow,.fl{animation:none}}
+.nv{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.nv a{padding:7px 14px;border:1px solid var(--line);border-radius:99px;color:var(--ink);text-decoration:none;font-weight:600;background:var(--card)}
+.nv a[aria-current=page]{background:var(--acc,var(--c110));color:#fff;border-color:transparent}
+.nv a:focus-visible{outline:3px solid var(--acc,var(--c110));outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<nav class="nv" aria-label="Páginas del sitio"><a href="index.html">Transformador por dentro (3D)</a><a href="simulador.html" aria-current="page">Simulador de transformador de poste</a></nav>
+<h1>Un transformador de poste y las casas que alimenta</h1>
+<p class="sub">Enciende y apaga aparatos, o deja correr un día completo. Verás cuánto consume cada casa, qué parte del transformador ocupa y cómo reacciona el transformador en carga y en temperatura.</p>
+
+<div class="top">
+  <section class="card" aria-label="El transformador">
+    <h2 class="ch">El transformador, en vivo</h2>
+    <svg viewBox="0 0 460 205" role="img" aria-label="Transformador con entrada de 13 200 voltios y salida de 220 y 110 voltios, con las corrientes de cada línea">
+      <text x="6" y="24">Red 13 200 V</text>
+      <path class="w" d="M6 50H84M6 156H84"/><path class="fl" id="f_i1" d="M6 50H84"/><path class="fl" id="f_i2" d="M6 156H84"/>
+      <text id="ti" x="6" y="108">0 A</text><text x="6" y="123" style="font-weight:400;font-size:11px">corriente de entrada</text>
+      <rect id="cA" class="coil" x="84" y="36" width="34" height="132" rx="9" stroke="var(--coil)"/>
+      <rect x="126" y="26" width="14" height="152" rx="3" fill="var(--core)"/>
+      <rect id="cB" class="coil" x="148" y="36" width="34" height="132" rx="9" stroke="var(--coil)"/>
+      <text id="kvaT" x="133" y="16" text-anchor="middle">25 kVA</text>
+      <text id="kwT" x="133" y="198" text-anchor="middle">0 kW</text>
+      <path class="w l1" d="M182 52H330"/><path class="w ln" d="M182 102H330"/><path class="w l2" d="M182 152H330"/>
+      <path class="fl" id="f_o1" d="M182 52H330"/><path class="fl" id="f_on" d="M182 102H330"/><path class="fl" id="f_o2" d="M182 152H330"/>
+      <text id="t1" x="190" y="44">L1: 0 A</text><text id="tn" x="190" y="94">N: 0 A</text><text id="t2" x="190" y="144">L2: 0 A</text>
+      <text id="v1" x="190" y="76" style="fill:var(--c110)">110 V</text><text id="v2" x="190" y="126" style="fill:var(--c110)">110 V</text>
+      <text x="338" y="57">L1</text><text x="338" y="107">N</text><text x="338" y="157">L2</text>
+      <path d="M418 52V152M412 52h6M412 152h6" fill="none" stroke-width="3" style="stroke:var(--c220)"/>
+      <text id="v220" x="406" y="107" text-anchor="end" style="fill:var(--c220)">220 V</text>
+    </svg>
+    <div class="stats4">
+      <div class="stat"><b id="sp">0 A</b><span>Entrada (13 200 V)</span><span id="sp2">0 % de su nominal</span><div class="mini"><i id="spb"></i></div></div>
+      <div class="stat"><b id="s1">0 A</b><span>Línea 1</span><span id="s1p">0 % de su nominal</span><div class="mini"><i id="s1b"></i></div></div>
+      <div class="stat"><b id="s2">0 A</b><span>Línea 2</span><span id="s2p">0 % de su nominal</span><div class="mini"><i id="s2b"></i></div></div>
+      <div class="stat"><b id="sn">0 A</b><span>Neutro</span><span id="snp">0 % de una línea</span><div class="mini"><i id="snb"></i></div></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="Carga y temperatura">
+    <h2 class="ch">Carga y temperatura</h2>
+    <div class="gwrap"><svg id="gz" viewBox="0 0 220 125" role="img" aria-label="Medidor de carga del transformador"></svg></div>
+    <div class="gr"><b id="gp">0 %</b><span id="gk">0 kW de 25 kVA</span></div>
+    <div class="cap"><label for="kva">Capacidad del transformador</label><select id="kva"><option>15</option><option selected>25</option><option>37.5</option><option>50</option><option>75</option></select> kVA</div>
+    <div class="th"><div class="thh"><span>Punto caliente del devanado</span><b id="hsT">30 °C</b></div><div class="tb"><i id="hsB"></i><u style="left:56.7%"></u><u style="left:66.7%"></u><u style="left:83.3%"></u></div></div>
+    <div class="th"><div class="thh"><span>Aceite superior</span><b id="oilT">30 °C</b></div><div class="tb"><i id="oilB"></i><u style="left:56.7%"></u><u style="left:66.7%"></u><u style="left:83.3%"></u></div></div>
+    <p class="small" style="margin:2px 0 0">Marcas en las barras: 98 °C (límite cómodo), 110 °C (referencia) y 130 °C (crítico). Ambiente: 30 °C. Desgaste del aislamiento: <b id="faa">1×</b> lo normal.</p>
+    <p style="margin:10px 0 0"><span class="pill" id="pill">Normal</span> <span id="msg"></span></p>
+    <p class="trend" id="trend"></p>
+  </section>
+</div>
+
+<section class="card mt" aria-label="Carga y temperatura en el tiempo">
+  <h2 class="ch">Qué pasa a lo largo del tiempo</h2>
+  <div class="dayc">
+    <button id="play">Reproducir un día</button><button id="rst">Reiniciar</button>
+    <label>Velocidad <select id="spd"><option value="120">Lenta (2 min por día)</option><option value="60" selected>Normal (1 min por día)</option><option value="30">Rápida (30 s por día)</option></select></label>
+    <span class="clk" id="clk">00:00</span><span class="mode" id="mode">Modo manual: tú decides qué se enciende.</span>
+  </div>
+  <div class="tl" aria-hidden="true"><i id="tlm"></i></div>
+  <div class="lg" id="lg"></div>
+  <canvas id="cv" role="img" aria-label="Gráfico de la carga de cada casa y de la temperatura del transformador en los últimos 90 segundos"></canvas>
+  <p class="small" style="margin:6px 0 0">Muestra los últimos 90 segundos. Arriba, la carga de cada casa apilada contra la capacidad. Abajo, la temperatura. Apaga aparatos: la carga cae al instante, pero la temperatura baja despacio porque el aceite y los devanados guardan calor (inercia térmica). El tiempo del simulador va acelerado.</p>
+</section>
+
+<section class="card mt" aria-label="Reparto de la carga entre casas">
+  <h2 class="ch">Cuánto ocupa cada casa del transformador</h2>
+  <div class="sb" id="sb" role="img" aria-label="Barra con la parte de la capacidad que usa cada casa"></div>
+  <div class="sl"><span style="left:0">0 %</span><span style="left:71.43%;transform:translateX(-50%)">100 % (capacidad)</span><span style="right:0">140 %</span></div>
+  <table class="sh" id="sh"></table>
+</section>
+
+<div class="row">
+  <button data-p="0">Madrugada</button><button data-p="1">Hora de la cena</button><button data-p="2">Todo encendido</button><button data-p="3">Apagar todo</button><button id="off220">Apagar solo los de 220 V</button>
+  <span class="sp"></span>
+  <button id="add">Agregar casa</button><button id="del">Quitar casa</button>
+</div>
+<div id="houses"></div>
+
+<section class="card why mt" aria-label="Cómo lo reparte">
+  <h2 class="ch">¿Cómo “reparte” el voltaje?</h2>
+  <p>No lo reparte: lo fija. La relación de vueltas (13 200 V a 220 V, unas 60 a 1) hace que entre L1 y L2 haya siempre cerca de 220 V, y entre cada línea y el neutro cerca de 110 V. Lo que cambia con cada casa es la <b>corriente</b>: cada aparato toma I = P / V, y la potencia de todas las casas se suma en el transformador.</p>
+  <p>Un aparato de 110 V usa una línea y el neutro. Uno de 220 V usa las dos líneas. Si las casas cargan más una línea que la otra, el neutro lleva la diferencia. Cuando la suma supera los kVA del transformador, el aceite y los devanados se calientan, el aislamiento envejece más rápido y el voltaje baja un poco.</p>
+  <p style="color:var(--mut)">Eso es lo que vigila un gemelo digital: con la carga calcula temperatura y envejecimiento y avisa antes del daño. Modelo simplificado: aparatos resistivos (1 kVA equivale a 1 kW), ambiente de 30 °C y ecuaciones de régimen estable con inercia térmica simulada.</p>
+  <details><summary>Qué significa cada variable</summary>
+  <dl>
+    <dt>Capacidad (kVA)</dt><dd>La potencia máxima que el transformador entrega sin calentarse de más.</dd>
+    <dt>Carga (kW y %)</dt><dd>Lo que consumen todas las casas ahora, comparado con la capacidad.</dd>
+    <dt>Corriente de línea</dt><dd>Lo que circula por cada cable vivo (L1 y L2). Lo nominal por línea es la capacidad dividida entre 220 V.</dd>
+    <dt>Neutro</dt><dd>Lleva la diferencia entre L1 y L2. Si las casas están equilibradas, casi no circula corriente.</dd>
+    <dt>Punto caliente y aceite</dt><dd>Temperatura del punto más caliente del devanado y del aceite de arriba. El aislamiento de papel sufre con el punto caliente.</dd>
+    <dt>Desgaste</dt><dd>Cuántas veces más rápido que lo normal envejece el aislamiento (1× es lo normal con 110 °C en el punto caliente).</dd>
+    <dt>Inercia térmica</dt><dd>La temperatura sube y baja despacio: al apagar aparatos la carga cae al instante, pero el transformador tarda en enfriarse.</dd>
+  </dl></details>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s),f=(n,d=1)=>n.toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d}),set=(id,v)=>{$('#'+id).textContent=v};
+const AP=[["💡","Luces",110,100],["📺","Televisor",110,150],["🧊","Nevera",110,200],["🍲","Microondas",110,1200],["👕","Plancha",110,1000],["❄️","Aire acondicionado",220,1800],["🔥","Estufa eléctrica",220,3000],["🚿","Ducha eléctrica",220,4500]];
+const COL=['#0f8b8d','#c9803a','#7a5fd0','#d1495b','#4f9d2d','#2f6fb3'],CL=['#2e8b57','#d9a400','#e27a1b','#c0392b'];
+const PRE=[[1,0,1,0,0,0,0,0],[1,1,1,1,0,0,1,0],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0]];
+const SCH=[[[5.5,7],[18,23.5]],[[18.5,23]],[[0,24]],[[6.8,7.1],[12.2,12.6],[19,19.3]],[[6.2,7],[20,20.6]],[[12.5,17.5],[21,24],[0,1.5]],[[6,7.3],[12,13.3],[18,19.5]],[[5.5,6.2],[18.8,19.4],[21.3,21.8]]];
+const MASK=[[1,1,1,1,1,1,1,1],[1,1,1,1,0,0,1,1],[1,1,1,1,1,1,0,1],[1,1,1,1,1,0,1,1],[1,1,1,0,1,1,1,1],[1,1,1,1,1,1,1,0]],SHIFT=[0,.5,-.4,.9,-.8,.3];
+const sched=(i,j,hr)=>{if(!MASK[i%6][j])return 0;const h=((hr-SHIFT[i%6])%24+24)%24;return SCH[j].some(([a,b])=>h>=a&&h<b)?1:0};
+const LV=[['var(--ok)','Normal','Opera con holgura.'],['var(--warn)','Atención','Cerca de su límite: conviene vigilar.'],['var(--hi)','Alerta','Sobrecarga: el aislamiento envejece más rápido.'],['var(--bad)','Crítico','Sobrecarga severa: hay que reducir la carga ya.']];
+const lvl=(h,K)=>Math.max(h<98?0:h<110?1:h<130?2:3,K<.85?0:K<1?1:K<1.2?2:3);
+const MAXS=360,cap=()=>+$('#kva').value*1000;
+let H=[[1,1,1,0,0,0,0,0],[1,0,1,0,0,0,1,0],[1,1,0,0,0,0,0,0]],auto=false,playing=false,hour=0,oil=30,hs=30,tH=30,C={P:0,I1:0,I2:0,per:[]},sig='',S=[],last=performance.now(),acc=0;
+function calc(){let I1=0,I2=0,P=0;const per=H.map((h,i)=>{let a=0,b=0,p=0;h.forEach((on,j)=>{if(!on)return;const V=AP[j][2],W=AP[j][3],I=W/V;p+=W;if(V==220){a+=I;b+=I}else if((i+j)%2)b+=I;else a+=I});I1+=a;I2+=b;P+=p;return{a,b,p}});return{I1,I2,P,per}}
+const kvs=()=>f(cap()/1000,cap()%1000?1:0);
+// medidor
+const pt=(p,r)=>{const a=Math.PI*(1-p/140);return[110+r*Math.cos(a),105-r*Math.sin(a)]};
+const arc=(p0,p1,r)=>{const[a,b]=pt(p0,r),[c,d]=pt(p1,r);return `M${a.toFixed(1)} ${b.toFixed(1)}A${r} ${r} 0 0 1 ${c.toFixed(1)} ${d.toFixed(1)}`};
+$('#gz').innerHTML=[[0,80,'ok'],[80,100,'warn'],[100,120,'hi'],[120,140,'bad']].map(z=>`<path d="${arc(z[0],z[1],84)}" fill="none" stroke-width="14" style="stroke:var(--${z[2]})"/>`).join('')
+ +[0,50,100,140].map(p=>{const[x,y]=pt(p,100);return `<text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" style="font-size:10px;font-weight:400">${p}</text>`}).join('')
+ +'<g id="nd" style="transform-origin:110px 105px;transition:transform .35s"><path d="M105 105L110 30L115 105Z" fill="var(--ink)"/></g><circle cx="110" cy="105" r="7" fill="var(--ink)"/>';
+// casas
+function renderHouses(){const ae=document.activeElement,fi=ae&&ae.dataset&&ae.dataset.i!==undefined?[ae.dataset.i,ae.dataset.j]:null,c=cap(),tot=C.P;
+ $('#houses').innerHTML=H.map((h,i)=>{const q=C.per[i],pct=q.p/c*100,d=Math.max(.3,1.6-Math.min(q.p/8000,1)*1.3);
+  return `<section class="card house" style="--hc:${COL[i]}"><h3>🏠 Casa ${i+1}</h3><div class="pw"><b>${f(q.p/1000,2)} kW</b><span>${f(pct,1)} % del transformador</span></div><div class="hbar" aria-hidden="true"><i style="width:${Math.min(pct,100)}%"></i></div><div class="flow" style="--d:${d}s;opacity:${q.p?1:.15}"></div><div class="chips">${AP.map((x,j)=>`<button class="chip v${x[2]}" aria-pressed="${!!h[j]}" data-i="${i}" data-j="${j}">${x[0]} ${x[1]}<small>${x[2]} V, ${x[3]} W</small></button>`).join('')}</div><p class="sum">${tot?f(q.p/tot*100,0)+' % de la carga que hay ahora. ':'Sin consumo. '}Línea 1: ${f(q.a)} A. Línea 2: ${f(q.b)} A.</p></section>`}).join('');
+ if(fi){const b=$(`.chip[data-i="${fi[0]}"][data-j="${fi[1]}"]`);if(b)b.focus()}}
+function renderShare(){const c=cap(),tot=C.P,free=Math.max(0,c-tot),over=Math.max(0,tot-c);
+ $('#sb').innerHTML=C.per.map((q,i)=>`<i style="width:${q.p/c*100/140*100}%;background:${COL[i]}" title="Casa ${i+1}: ${f(q.p/1000,2)} kW"></i>`).join('')+'<b class="sm"></b>';
+ $('#sh').innerHTML='<tr><th>Casa</th><th>Consume</th><th>% del transformador</th><th>% de la carga ahora</th></tr>'
+  +C.per.map((q,i)=>`<tr><td><span class="dot" style="background:${COL[i]}"></span>Casa ${i+1}</td><td>${f(q.p/1000,2)} kW</td><td>${f(q.p/c*100,1)} %</td><td>${tot?f(q.p/tot*100,0):0} %</td></tr>`).join('')
+  +`<tr><td><b>Total</b></td><td><b>${f(tot/1000,2)} kW</b></td><td><b>${f(tot/c*100,1)} %</b></td><td>100 %</td></tr>`
+  +(over?`<tr><td>Exceso sobre la capacidad</td><td>${f(over/1000,2)} kW</td><td>${f(over/c*100,1)} %</td><td></td></tr>`:`<tr><td>Capacidad libre</td><td>${f(free/1000,2)} kW</td><td>${f(free/c*100,1)} %</td><td></td></tr>`);
+ $('#lg').innerHTML=C.per.map((q,i)=>`<span><i style="background:${COL[i]}"></i>Casa ${i+1}</span>`).join('')+'<span><i style="background:var(--ink)"></i>Punto caliente</span><span><i style="background:var(--mut)"></i>Aceite superior</span><span><i style="border:2px dashed var(--mut);background:none"></i>Hacia dónde tiende</span>'}
+function refresh(){sig=JSON.stringify(H);C=calc();renderHouses();renderShare();ui()}
+// panel en vivo
+const bc=p=>p>100?CL[3]:p>80?CL[1]:'var(--c110)',bar=(id,p)=>{const e=$('#'+id);e.style.width=Math.min(p,100)+'%';e.style.background=bc(p)};
+const flow=(id,I,Im)=>{const e=$('#'+id);e.style.setProperty('--d',Math.max(.25,1.5-Math.min(I/Im,1.2)*1.1)+'s');e.style.opacity=I>.05?1:.1};
+function ui(){const c=cap(),K=C.P/c,V=220*(1-.035*Math.min(K,2)),Ir=c/220,Ip=C.P/13200,Ipr=c/13200,In=Math.abs(C.I1-C.I2),L=lvl(hs,K),lv=LV[L],d=hs-tH;
+ set('ti',f(Ip,2)+' A');set('t1','L1: '+f(C.I1)+' A');set('t2','L2: '+f(C.I2)+' A');set('tn','N: '+f(In)+' A');
+ set('v1',f(V/2,0)+' V');set('v2',f(V/2,0)+' V');set('v220',f(V,0)+' V');set('kvaT',kvs()+' kVA');set('kwT',f(C.P/1000,1)+' kW');
+ set('sp',f(Ip,2)+' A');set('sp2',f(Ip/Ipr*100,0)+' % de su nominal');bar('spb',Ip/Ipr*100);
+ set('s1',f(C.I1)+' A');set('s1p',f(C.I1/Ir*100,0)+' % de su nominal');bar('s1b',C.I1/Ir*100);
+ set('s2',f(C.I2)+' A');set('s2p',f(C.I2/Ir*100,0)+' % de su nominal');bar('s2b',C.I2/Ir*100);
+ set('sn',f(In)+' A');set('snp',f(In/Ir*100,0)+' % de una línea');bar('snb',In/Ir*100);
+ flow('f_i1',Ip,Ipr);flow('f_i2',Ip,Ipr);flow('f_o1',C.I1,Ir);flow('f_o2',C.I2,Ir);flow('f_on',In,Ir);
+ set('gp',f(K*100,0)+' %');set('gk',f(C.P/1000,2)+' kW de '+kvs()+' kVA');$('#nd').style.transform='rotate('+(Math.min(K*100,140)/140*180-90)+'deg)';
+ [['hs',hs],['oil',oil]].forEach(([id,T])=>{set(id+'T',f(T,0)+' °C');const b=$('#'+id+'B');b.style.width=Math.max(0,Math.min(100,(T-30)/120*100))+'%';b.style.background=lv[0]});
+ set('faa',f(Math.exp(15000/383-15000/(hs+273)),hs>110?1:2)+'×');
+ const p=$('#pill');p.textContent=lv[1];p.style.background=lv[0];set('msg',lv[2]+(K>1?' Demanda de '+f(C.P/1000,1)+' kW sobre '+f(c/1000,1)+' kW de capacidad.':''));
+ set('trend',Math.abs(d)<1.5?'Temperatura estable para esta carga.':d<0?'Calentándose: con esta carga el punto caliente tiende a '+f(tH,0)+' °C.':'Enfriándose: la carga bajó, pero el aceite tarda en enfriarse. Tiende a '+f(tH,0)+' °C.');
+ ['cA','cB'].forEach(id=>$('#'+id).style.stroke=L?lv[0]:'var(--coil)');
+ const hh=Math.floor(hour),mm=Math.floor((hour-hh)*60);set('clk',String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'));$('#tlm').style.left=hour/24*100+'%';
+ set('mode',auto?(playing?'Simulando un día: los aparatos se encienden y apagan solos.':'Día en pausa.'):'Modo manual: tú decides qué se enciende.');$('#play').textContent=playing?'Pausar':'Reproducir un día'}
+// gráfico
+function chart(){const cv=$('#cv'),W=cv.clientWidth,Hh=cv.clientHeight;if(!W)return;const dpr=Math.min(devicePixelRatio||1,2);
+ if(cv.width!==Math.round(W*dpr)||cv.height!==Math.round(Hh*dpr)){cv.width=Math.round(W*dpr);cv.height=Math.round(Hh*dpr)}
+ const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,Hh);
+ const cs=getComputedStyle(document.documentElement),ink=cs.getPropertyValue('--ink').trim(),mut=cs.getPropertyValue('--mut').trim(),ln=cs.getPropertyValue('--line').trim();
+ const Lm=48,Rm=10,pw=W-Lm-Rm,dx=pw/(MAXS-1),X=k=>Lm+pw-(S.length-1-k)*dx,F='system-ui, sans-serif';
+ const y0=20,y1=150,peak=S.reduce((m,s)=>Math.max(m,s.tot),0),ym=peak>110?Math.ceil(peak*1.1/50)*50:120,Y=v=>y1-v/ym*(y1-y0);
+ g.lineWidth=1;g.strokeStyle=ln;g.fillStyle=mut;g.font='11px '+F;g.textAlign='right';
+ for(let v=0;v<=ym;v+=50){const y=Y(v);g.beginPath();g.moveTo(Lm,y);g.lineTo(W-Rm,y);g.stroke();g.fillText(v+' %',Lm-6,y+4)}
+ g.fillStyle=ink;g.font='600 12px '+F;g.textAlign='left';g.fillText('Carga de las casas (% de la capacidad del transformador)',Lm,12);
+ if(S.length>1){g.save();g.beginPath();g.rect(Lm,y0-2,pw,y1-y0+2);g.clip();const n=Math.max(...S.map(s=>s.per.length));let base=S.map(()=>0);
+  for(let i=0;i<n;i++){const top=S.map((s,k)=>base[k]+(s.per[i]||0));g.beginPath();S.forEach((s,k)=>{k?g.lineTo(X(k),Y(top[k])):g.moveTo(X(k),Y(top[k]))});for(let k=S.length-1;k>=0;k--)g.lineTo(X(k),Y(base[k]));g.closePath();g.fillStyle=COL[i];g.globalAlpha=.85;g.fill();g.globalAlpha=1;base=top}
+  g.restore()}
+ g.setLineDash([5,4]);g.strokeStyle=CL[3];g.beginPath();g.moveTo(Lm,Y(100));g.lineTo(W-Rm,Y(100));g.stroke();g.setLineDash([]);
+ g.fillStyle=CL[3];g.font='11px '+F;g.fillText('Capacidad (100 %)',Lm+6,Y(100)-4);
+ const a=196,b=288,Y2=t=>b-(t-30)/120*(b-a);
+ g.strokeStyle=ln;g.fillStyle=mut;g.textAlign='right';
+ for(let t=30;t<=150;t+=30){const y=Y2(t);g.beginPath();g.moveTo(Lm,y);g.lineTo(W-Rm,y);g.stroke();g.fillText(t+' °C',Lm-6,y+4)}
+ g.fillStyle=ink;g.font='600 12px '+F;g.textAlign='left';g.fillText('Temperatura del transformador',Lm,a-10);
+ [[98,CL[1]],[110,CL[2]],[130,CL[3]]].forEach(([t,c])=>{g.setLineDash([4,4]);g.strokeStyle=c;g.beginPath();g.moveTo(Lm,Y2(t));g.lineTo(W-Rm,Y2(t));g.stroke();g.setLineDash([]);g.fillStyle=c;g.font='10px '+F;g.textAlign='right';g.fillText(t+' °C',W-Rm-2,Y2(t)-3)});
+ const path=(key,col,w,dash)=>{if(S.length<2)return;g.beginPath();S.forEach((s,k)=>{const y=Y2(Math.min(150,Math.max(30,s[key])));k?g.lineTo(X(k),y):g.moveTo(X(k),y)});g.setLineDash(dash||[]);g.strokeStyle=col;g.lineWidth=w;g.stroke();g.setLineDash([]);g.lineWidth=1};
+ path('oil',mut,1.6);path('tg',mut,1.3,[3,4]);path('hs',ink,2.4);
+ g.fillStyle=mut;g.font='11px '+F;g.textAlign='left';g.fillText('hace 90 s',Lm,Hh-4);g.textAlign='right';g.fillText('ahora',W-Rm,Hh-4)}
+function sample(){const c=cap();S.push({per:C.per.map(q=>q.p/c*100),tot:C.P/c*100,hs,oil,tg:tH});if(S.length>MAXS)S.shift()}
+// simulación
+const manual=()=>{auto=false;playing=false};
+function tick(){const now=performance.now(),dt=Math.min((now-last)/1000,.5);last=now;
+ if(playing){hour=(hour+dt/(+$('#spd').value)*24)%24;if(auto)H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)))}
+ if(JSON.stringify(H)!==sig){sig=JSON.stringify(H);C=calc();renderHouses();renderShare()}
+ const K=C.P/cap(),tO=30+55*Math.pow((1+5*K*K)/6,.8);tH=tO+23*Math.pow(K,1.6);
+ const a=1-Math.exp(-dt/3);oil+=(tO-oil)*a;hs+=(tH-hs)*a;
+ acc+=dt;if(acc>=.25){acc-=.25;sample()}
+ ui();chart()}
+$('#houses').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;manual();H[+b.dataset.i][+b.dataset.j]^=1;refresh()});
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{manual();H=H.map(()=>PRE[+b.dataset.p].slice());refresh()});
+$('#off220').onclick=()=>{manual();H=H.map(h=>h.map((on,j)=>AP[j][2]==220?0:on));refresh()};
+$('#add').onclick=()=>{if(H.length<6){H.push(PRE[0].slice());refresh()}};
+$('#del').onclick=()=>{if(H.length>1){H.pop();refresh()}};
+$('#kva').onchange=()=>{renderHouses();renderShare();ui()};
+$('#play').onclick=()=>{if(playing){playing=false}else{auto=true;playing=true;H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)))}refresh()};
+$('#rst').onclick=()=>{hour=0;if(auto)H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)));refresh()};
+refresh();setInterval(tick,100);
+</script>
+</body>
+</html>
