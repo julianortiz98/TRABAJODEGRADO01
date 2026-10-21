@@ -60,9 +60,10 @@ Este proyecto tiene fines educativos y permite explorar conceptos relacionados c
 El simulador utiliza un modelo matemático simplificado y valores de ejemplo. No está conectado a un transformador físico ni a sensores reales, y sus alertas no constituyen un diagnóstico técnico del equipo. Para aplicaciones reales se requieren modelos validados, datos medidos y criterios de ingeniería.
 
 ## 👨‍💻 Autor
+Julian David Ortiz Gaviria 
 
 Proyecto académico de investigación y simulación sobre gemelos digitales aplicados a transformadores eléctricos.
 
 ## 📄 Licencia
 
-La licencia de uso y distribución está pendiente de definir.
+La licencia de uso y distribución.
