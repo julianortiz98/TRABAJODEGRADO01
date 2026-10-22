@@ -1,4 +1,4 @@
-# Transformadores: del poste al gemelo digital
+# Transformadores:gemelo digital
 
 Dos simuladores web interactivos para entender cómo se carga, se calienta y envejece un transformador, y cómo un gemelo digital puede avisar antes de una falla.
 
@@ -159,10 +159,6 @@ HTML, CSS y JavaScript sin servidor · three.js r128 (WebGL) · canvas 2D y SVG 
 - IEC. (2018). *IEC 60076-7:2018. Power transformers. Part 7: Loading guide for mineral-oil-immersed power transformers.*
 - Duval, M. (2002). A review of faults detectable by gas-in-oil analysis in transformers. *IEEE Electrical Insulation Magazine, 18*(3), 8-17.
 - Grieves, M. (2014). *Digital twin: Manufacturing excellence through virtual factory replication* [White paper].
-
-## Historial de cambios
-
-- **21 de octubre de 2026:** en `simulador.html` el secundario del poste pasó de 220/110 V a 240/120 V (tensiones, aparatos, corriente nominal y textos). `index.html` no cambió.
 
 ## Autor
 
