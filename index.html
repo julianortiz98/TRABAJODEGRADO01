@@ -37,6 +37,13 @@ button,select,input{font:inherit;color:inherit}
 #view{height:clamp(380px,64vh,660px);border-radius:10px;border:1px solid var(--line);background:radial-gradient(ellipse at 50% 35%,var(--v1),var(--v2));overflow:hidden;position:relative}
 #view canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #view canvas:active{cursor:grabbing}
+#view::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 58%,rgba(0,0,0,.2) 100%)}
+#fsb{position:absolute;right:10px;bottom:10px;z-index:2;display:flex;gap:6px;align-items:center;background:var(--pn);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;cursor:pointer;font-weight:500}
+#fsb:hover{border-color:var(--acc)}#fsb svg{flex:none}
+#view:fullscreen{width:100%;height:100%;border:0;border-radius:0}
+#view:-webkit-full-screen{width:100%;height:100%;border:0;border-radius:0}
+#view.fs{position:fixed;inset:0;z-index:60;height:100vh;height:100dvh;border:0;border-radius:0}
+body.fsl{overflow:hidden}
 #hint{position:absolute;left:12px;bottom:8px;font-size:.8rem;color:var(--mut);pointer-events:none;max-width:60%}
 #vmsg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--ink);background:var(--pn)}
 .seg{position:absolute;top:10px;left:10px;display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--pn)}
@@ -117,7 +124,7 @@ td.v{font-weight:600}tr.g th{background:var(--pn);color:var(--acc);position:stat
    <h2>Partes</h2>
    <div class="list" id="list" role="group" aria-label="Partes del transformador"></div>
    <div id="info" aria-live="polite"><h2>Elige una parte</h2><p>Toca una parte en el modelo o en esta lista para ver para qué sirve y qué mediría el gemelo digital para avisar antes de una falla.</p>
-   <p class="twin"><span class="dot"></span>Los puntos turquesa son sensores. Las partículas amarillas y celestes son el flujo magnético alterno (representación conceptual).</p></div>
+   <p class="twin"><span class="dot"></span>Los puntos turquesa son sensores. Las partículas verdes son la energía (corriente por borne, aislador y espiras, y flujo magnético en el núcleo) y las de color naranja son el aceite en circulación. Son representaciones conceptuales.</p></div>
   </section>
  </div>
  <div class="col c-c">
@@ -126,12 +133,14 @@ td.v{font-weight:600}tr.g th{background:var(--pn);color:var(--acc);position:stat
     <div class="seg" role="group" aria-label="Modo de visualización"><button type="button" data-mode="ext" aria-pressed="true">Exterior</button><button type="button" data-mode="cut" aria-pressed="false">Corte</button><button type="button" data-mode="exp" aria-pressed="false">Explotada</button></div>
     <span id="hint">Arrastra para girar, rueda o dos dedos para acercar, toca una parte para ver su función.</span>
     <div id="vmsg" role="alert"></div>
+    <button type="button" id="fsb" aria-pressed="false" aria-label="Ver el modelo en pantalla completa" title="Pantalla completa"></button>
    </div>
    <div class="ctl">
     <label><input type="checkbox" id="tk"> Tanque transparente</label>
     <label><input type="checkbox" id="sn"> Sensores del gemelo</label>
     <label><input type="checkbox" id="fx" checked> Flujo magnético</label>
-    <label><input type="checkbox" id="oc" checked> Circulación del aceite</label>
+    <label><input type="checkbox" id="oc" checked> Circulación del aceite (naranja)</label>
+    <label><input type="checkbox" id="cu" checked> Corriente de energía (verde)</label>
     <label><input type="checkbox" id="th"> Vista térmica</label>
     <label><input type="checkbox" id="sh"> Sombras reales</label>
    </div>
@@ -143,7 +152,7 @@ td.v{font-weight:600}tr.g th{background:var(--pn);color:var(--acc);position:stat
    <p class="cap">Flujo magnético y circulación del aceite son representaciones conceptuales: no son mediciones ni una simulación CFD. Todas las lecturas son simuladas.</p>
   </section>
   <section class="c-kpi kpis" id="kpis" aria-label="Indicadores principales"></section>
-  <section class="card c-trend"><h2>Tendencias <small>últimos 2 minutos</small></h2><canvas id="tr" role="img" aria-label="Gráfica de tendencia de temperaturas y carga"></canvas><div class="lgd" id="trl"></div></section>
+  <section class="card c-trend"><h2>Tendencias <small>últimos 2 min reales (1 s = 1 h simulada)</small></h2><canvas id="tr" role="img" aria-label="Gráfica de tendencia de temperaturas y carga"></canvas><div class="lgd" id="trl"></div><p class="cap" id="stt"></p></section>
   <section class="card c-life"><h2>Vida útil del aislamiento <small>proyección con carga y ambiente constantes</small></h2>
    <div class="lifeg"><div class="kp" id="lf_c" data-lv="0"><span>Vida consumida</span><b></b><i></i></div><div class="kp" id="lf_r" data-lv="0"><span>Vida restante proyectada</span><b></b><i></i></div><div class="kp" id="lf_d" data-lv="0"><span>Agotamiento estimado</span><b></b><i></i></div></div>
    <div class="bar" role="img" aria-label="Vida consumida del aislamiento"><div id="lf_bar" data-lv="0"></div></div>
@@ -201,7 +210,7 @@ const cv=R.domElement;cv.tabIndex=0;cv.setAttribute('aria-label','Transformador 
 /* ---------- 2. Texturas procedurales ---------- */
 const RES=[];
 const ctex=(w,h,fn,o={})=>{const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);
- if(o.rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(o.rep[0],o.rep[1])}if(o.s)t.encoding=T.sRGBEncoding;t.anisotropy=4;RES.push(t);return t};
+ if(o.rep){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(o.rep[0],o.rep[1])}if(o.s)t.encoding=T.sRGBEncoding;t.anisotropy=Math.min(8,R.capabilities.getMaxAnisotropy());RES.push(t);return t};
 const noise=ctex(128,128,(x,w,h)=>{for(let i=0;i<w;i+=2)for(let j=0;j<h;j+=2){const v=110+rnd()*120|0;x.fillStyle='rgb('+v+','+v+','+v+')';x.fillRect(i,j,2,2)}},{rep:[3,3]});
 const lam=ctex(8,64,(x,w,h)=>{for(let j=0;j<h;j++){const v=j%4?205:55;x.fillStyle='rgb('+v+','+v+','+v+')';x.fillRect(0,j,w,1)}},{rep:[2,6]});
 const rib=ctex(32,8,(x,w,h)=>{const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'#1c1c1c');g.addColorStop(.5,'#f0f0f0');g.addColorStop(1,'#1c1c1c');x.fillStyle=g;x.fillRect(0,0,w,h)},{rep:[18,1]});
@@ -209,6 +218,8 @@ const hatch=ctex(32,32,(x,w,h)=>{x.fillStyle='#e3e8eb';x.fillRect(0,0,w,h);x.str
 const rustT=ctex(128,128,(x,w,h)=>{x.clearRect(0,0,w,h);for(let i=0;i<80;i++){const px=rnd()*w,py=rnd()*h,r=3+rnd()*15,g=x.createRadialGradient(px,py,0,px,py,r),a=.25+rnd()*.5;
  g.addColorStop(0,'rgba('+(110+rnd()*40|0)+','+(48+rnd()*20|0)+',20,'+a+')');g.addColorStop(1,'rgba(110,50,20,0)');x.fillStyle=g;x.fillRect(px-r,py-r,2*r,2*r)}},{s:1});
 const stainT=ctex(64,128,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(18,10,4,.9)');g.addColorStop(1,'rgba(18,10,4,0)');x.fillStyle=g;x.beginPath();x.moveTo(w*.35,0);x.lineTo(w*.65,0);x.lineTo(w*.9,h);x.lineTo(w*.1,h);x.fill()},{s:1});
+const wxT=ctex(128,256,(x,w,h)=>{x.fillStyle='#fff';x.fillRect(0,0,w,h);for(let i=0;i<70;i++){const q=rnd()*w,l=h*(.2+rnd()*.7),g=x.createLinearGradient(0,0,0,l);g.addColorStop(0,'rgba(40,28,18,'+(.1+rnd()*.14)+')');g.addColorStop(1,'rgba(40,28,18,0)');x.fillStyle=g;x.fillRect(q,0,1+rnd()*2.5,l)}
+ for(let i=0;i<500;i++){x.fillStyle='rgba(60,50,40,'+rnd()*.12+')';x.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1+rnd()*2)}},{rep:[1,1],s:1});
 const radial=(stops,sz=128)=>ctex(sz,sz,(x,w,h)=>{const g=x.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);stops.forEach(s=>g.addColorStop(s[0],s[1]));x.fillStyle=g;x.fillRect(0,0,w,h)},{s:1});
 const poolT=radial([[0,'rgba(12,8,4,.95)'],[.7,'rgba(12,8,4,.8)'],[1,'rgba(12,8,4,0)']]);
 const blobT=radial([[0,'rgba(0,0,0,.5)'],[.6,'rgba(0,0,0,.22)'],[1,'rgba(0,0,0,0)']]);
@@ -239,14 +250,14 @@ const CLP=[0,1,2,3,4].map(()=>new T.Plane(new T.Vector3(1,0,0),0)); // ventana d
 const OLP=[new T.Plane(new T.Vector3(0,0,-1),1.5)];                 // corte del cambiador de tomas
 const mat=(o,cl=CLP,inter=true)=>{const m=new T.MeshStandardMaterial(Object.assign({roughness:.5,metalness:.3},o));m.clippingPlanes=cl;m.clipIntersection=inter;return m};
 const phys=(o)=>{const m=new T.MeshPhysicalMaterial(Object.assign({roughness:.2,metalness:0,clearcoat:.6,clearcoatRoughness:.15,side:T.DoubleSide},o));m.clippingPlanes=CLP;m.clipIntersection=true;return m};
-const paintO={roughness:.58,metalness:.3,bumpMap:noise,bumpScale:.35};
+const paintO={roughness:.85,metalness:.3,bumpMap:noise,bumpScale:.35,roughnessMap:noise};
 const MT={
- tank:mat(Object.assign({color:0x8ea297,side:T.DoubleSide},paintO)),lid:mat(Object.assign({color:0x869a8f,side:T.DoubleSide},paintO)),rib:mat(Object.assign({color:0x82968b},paintO)),
+ tank:phys(Object.assign({color:0x8ea297,map:wxT,clearcoat:.3,clearcoatRoughness:.4},paintO)),lid:phys(Object.assign({color:0x869a8f,map:wxT,clearcoat:.3,clearcoatRoughness:.4},paintO)),rib:mat(Object.assign({color:0x82968b},paintO)),
  paint:mat(Object.assign({color:0x95a79d},paintO)),rad:mat(Object.assign({color:0x879a90,bumpMap:rib,bumpScale:1.4},{roughness:.55,metalness:.3})),
  shellBolt:mat({color:0xcfd3d6,roughness:.4,metalness:.5}),galv:mat({color:0xcdd2d5,roughness:.4,metalness:.5}),steel:mat({color:0xaab3ba,roughness:.45,metalness:.5}),
  dark:mat({color:0x3a434b,roughness:.65,metalness:.45}),rubber:mat({color:0x15181a,roughness:.95,metalness:0}),
  core:mat({color:0x8d99a3,roughness:.5,metalness:.5,bumpMap:lam,bumpScale:.5}),clamp:mat({color:0x4a7ab8,roughness:.5,metalness:.4}),
- hv:mat({color:0xffffff,roughness:.5,metalness:.45}),lv:mat({color:0xffffff,roughness:.35,metalness:.55}),
+ hv:mat({color:0xffffff,roughness:.45,metalness:.5,bumpMap:lam,bumpScale:.9}),lv:mat({color:0xffffff,roughness:.32,metalness:.6,bumpMap:lam,bumpScale:.9}),
  pboard:mat({color:0xc4955a,roughness:.85,metalness:0,side:T.DoubleSide}),bake:mat({color:0x6b4a2e,roughness:.7,metalness:.05}),
  copper:mat({color:0xc87a45,roughness:.38,metalness:.6}),lead:mat({color:0xcfa96e,roughness:.7,metalness:.1}),alu:mat({color:0xc8d0d8,roughness:.4,metalness:.5}),
  earth:mat({color:0x2f9a3f,roughness:.6,metalness:.4}),
@@ -274,8 +285,10 @@ const SHELL=[MT.tank,MT.lid,MT.rib,MT.shellBolt,MT.oltc];
 const S=new T.Scene(),cam=new T.PerspectiveCamera(34,1,.1,140);
 MT.red=mat({color:0xb52c22,roughness:.5,metalness:.3});
 gravelT.repeat.set(22,22);
-let envRT=null; // sin mapa de entorno: se usan solo luces para que el resultado sea igual en cualquier GPU
-const hemi=new T.HemisphereLight(0xeaf2f9,0x4a5058,.95);S.add(hemi);
+let envRT=null; // entorno procedural (cielo, horizonte, suelo y cajas de luz) para reflejos; si la GPU no lo admite, se usan solo luces
+try{const pm=new T.PMREMGenerator(R),eq=ctex(512,256,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#eef4fa');g.addColorStop(.45,'#b9c8d6');g.addColorStop(.5,'#8d9aa6');g.addColorStop(.53,'#555b60');g.addColorStop(1,'#2a2e32');x.fillStyle=g;x.fillRect(0,0,w,h);x.fillStyle='#fff';[[60,40,90,26],[210,30,70,20],[360,45,100,28],[470,35,60,22]].forEach(q=>x.fillRect(q[0],q[1],q[2],q[3]))},{s:1});
+ envRT=pm.fromEquirectangular(eq);S.environment=envRT.texture;pm.dispose();Object.values(MT).forEach(m=>{if(m.isMeshStandardMaterial)m.envMapIntensity=.75})}catch(e){envRT=null}
+const hemi=new T.HemisphereLight(0xeaf2f9,0x4a5058,.6);S.add(hemi);const rimL=new T.DirectionalLight(0xffe6c8,.35);rimL.position.set(-5,6,-9);S.add(rimL);
 const keyL=new T.DirectionalLight(0xffffff,1.25);keyL.position.set(7,11,8);S.add(keyL);
 keyL.shadow.mapSize.set(2048,2048);Object.assign(keyL.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:40});keyL.shadow.camera.updateProjectionMatrix();keyL.shadow.bias=-.0004;keyL.shadow.normalBias=.03;
 const fillL=new T.DirectionalLight(0xbcd0e6,.3);fillL.position.set(-8,4,-6);S.add(fillL);
@@ -572,12 +585,18 @@ inst:['Instrumentos y caja de control','Placa de características, indicadores d
 valv:['Válvulas y puntos de muestreo','Válvula de drenaje, toma de muestras de aceite, válvulas de mariposa de los radiadores y válvulas de la tubería del conservador. Son puntos habituales de fuga por empaques envejecidos.','Fuga detectada por nivel de aceite, y gases y humedad en las muestras.','#6b7c88',['lv','h2']]};
 const LIST=$('#list');
 Object.keys(INFO).forEach(k=>{const b=document.createElement('button');b.type='button';b.textContent=INFO[k][0];b.style.setProperty('--c',INFO[k][3]);b.setAttribute('aria-pressed','false');b.dataset.k=k;b.onclick=()=>sel(k);LIST.appendChild(b)});
-function sel(k){selK=k;LIST.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));const i=INFO[k];
+// pieza elegida en rojo: capa roja translúcida sobre cada malla de la parte (no toca los materiales compartidos)
+const RDM=new Map(),RDO=[];
+function clrSel(){RDO.forEach(o=>{if(o.parent)o.parent.remove(o)});RDO.length=0}
+function addRed(m){const mt=m.material,cp=mt.clippingPlanes;let r=RDM.get(cp);if(!r){r=new T.MeshBasicMaterial({color:0xff2a1a,transparent:true,opacity:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3,clippingPlanes:cp,clipIntersection:mt.clipIntersection,side:mt.side});RDM.set(cp,r)}
+ let o;if(m.isInstancedMesh){o=new T.InstancedMesh(m.geometry,r,m.count);o.instanceMatrix=m.instanceMatrix;o.frustumCulled=false}else o=new T.Mesh(m.geometry,r);
+ o.castShadow=o.receiveShadow=false;o.renderOrder=4;o.raycast=()=>{};m.add(o);RDO.push(o)}
+function sel(k){clrSel();PK.forEach(m=>{if(m.userData.k===k)addRed(m)});selK=k;LIST.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));const i=INFO[k];
  $('#info').innerHTML='<h2>'+i[0]+'</h2><p>'+i[1]+'</p><p class="twin"><span class="dot"></span><b>El gemelo digital vigilaría:</b> '+i[2]+'</p><div class="rel" id="rel"></div>';updRel()}
 function updRel(){const r=$('#rel');if(!r||!selK)return;r.innerHTML=INFO[selK][4].map(id=>{const v=VARS.find(x=>x.id===id);return v?'<span>'+v.n+' ('+v.t+')</span><b>'+v.f(M)+'</b>':''}).join('')}
 
 /* ---------- 8. Simulación ---------- */
-const E={ld:$('#ld'),en:$('#en'),am:$('#am'),th:$('#th'),fx:$('#fx'),oc:$('#oc')};
+const E={ld:$('#ld'),en:$('#en'),am:$('#am'),th:$('#th'),fx:$('#fx'),oc:$('#oc'),cu:$('#cu')};
 const ST={K:.7,en:true,amb:30,oil:30,oilE:30,hs:30,hsE:30,core:30,eth:0,h2:20,fanCmd:false,fanCmdE:false,fanV:0,aging:0,age0:72000,simH:0,mwh:0,LV:1,fail:false,pool:0};
 const FS={corr:0,hum:0,pd:0,bush:0,conn:0,oltc:0},XF={c:1,g:1,eth:0,age:1};
 const FL=[['fb','Ventiladores averiados'],['f_leak','Fuga de aceite (aceite bajo)'],['f_corr','Corrosión del tanque y radiadores'],['f_hum','Humedad en el aceite'],['f_pd','Descargas parciales'],['f_bush','Bushing deteriorado'],['f_conn','Conexión floja (punto caliente)'],['f_oltc','Contactos del OLTC desgastados']];
@@ -588,7 +607,7 @@ function step(dt){
  ramp('corr',on('f_corr'),.06);ramp('hum',on('f_hum'),.05);ramp('pd',on('f_pd'),.12);ramp('bush',on('f_bush'),.05);ramp('conn',on('f_conn'),.1);ramp('oltc',on('f_oltc'),.08);
  const tl=Math.min(on('f_leak')?.3:1,1-Math.max(0,FS.corr-.6)*1.5);ST.LV=tl<ST.LV?Math.max(tl,ST.LV-dt*.06):Math.min(tl,ST.LV+dt*.15);
  const low=Math.max(0,.85-ST.LV);XF.c=1+low*1.6+FS.hum*.1;XF.g=1+low*1.2;XF.eth=FS.conn*5;XF.age=1+FS.hum*2+FS.bush*.3;
- const K=ST.K,rise=ST.en?55*Math.pow((1+5*K*K)/6,.8):0,a=Math.min(1,dt*.6),aw=Math.min(1,dt*3);
+ const K=ST.K,rise=ST.en?55*Math.pow((1+5*K*K)/6,.8):0,a=1-Math.exp(-dt*.6),aw=1-Math.exp(-dt*3);
  // la refrigeración forzada baja el calentamiento del aceite un 15 %; los ventiladores arrancan con histéresis
  ST.fanCmd=ST.en&&(ST.fanCmd?!(ST.oil<62&&ST.hs<90):(ST.oil>70||ST.hs>100));
  const fansOK=ST.fanCmd&&!ST.fail;
@@ -692,7 +711,7 @@ function settle(){for(let i=0;i<500;i++)step(.05);ST.aging=0;ST.simH=0;ST.mwh=0;
 let prevS={},prevT={};
 function resetSim(){FL.forEach(f=>$('#'+f[0]).checked=false);E.ld.value=21;E.am.value=30;E.en.checked=true;syncOut();Object.keys(FS).forEach(k=>FS[k]=0);
  Object.assign(ST,{oil:30,oilE:30,hs:30,hsE:30,core:30,eth:0,h2:20,fanCmd:false,fanCmdE:false,fanV:0,aging:0,simH:0,mwh:0,LV:1,pool:0});settle();
- Object.keys(TR).forEach(k=>TR[k].length=0);prevS={};prevT={};logEv(0,'Simulación reiniciada con carga de 21 MVA (70 %)')}
+ Object.keys(TR).forEach(k=>TR[k].length=0);STAT={maxK:0,maxHs:0,ovl:0,lv:[0,0,0,0]};prevS={};prevT={};logEv(0,'Simulación reiniciada con carga de 21 MVA (70 %)')}
 $('#rst').onclick=resetSim;
 
 // indicadores principales
@@ -711,7 +730,8 @@ VARS.forEach(v=>{const tr=document.createElement('tr');
 // tendencias
 const TR={oil:[],oilE:[],hs:[],ld:[]},TRN=240,BL='#3b8fe0',OR='#e2701a';
 $('#trl').innerHTML=[['Aceite medido',BL,'solid'],['Aceite esperado (modelo)',BL,'dashed'],['Punto caliente (estimado)',OR,'solid'],['Carga, eje derecho',css('--mut')||'#888','dotted']].map(l=>'<span><s style="border-top-style:'+l[2]+';border-color:'+l[1]+'"></s>'+l[0]+'</span>').join('');
-function trAdd(){const p=(k,v)=>{TR[k].push(v);if(TR[k].length>TRN)TR[k].shift()};p('oil',M.oil);p('oilE',M.oilE);p('hs',M.hs);p('ld',M.load);
+let trHov=-1,STAT={maxK:0,maxHs:0,ovl:0,lv:[0,0,0,0]};
+function trAdd(){STAT.maxK=Math.max(STAT.maxK,M.load);STAT.maxHs=Math.max(STAT.maxHs,M.hs);if(M.load>100)STAT.ovl+=.5;STAT.lv[TOPS]+=.5;const p=(k,v)=>{TR[k].push(v);if(TR[k].length>TRN)TR[k].shift()};p('oil',M.oil);p('oilE',M.oilE);p('hs',M.hs);p('ld',M.load);
  HIST.push([ST.simH,new Date().toLocaleTimeString('es-CO',{hour12:false}),M.S,M.load,M.oil,M.oilE,M.dev,M.hs,M.core,M.amb,M.faa,M.lifeP,isFinite(M.remY)?Math.min(M.remY,1000):1000,M.mwh,M.h2,M.eth,M.lv,M.hum,M.pd,M.td,M.dt,M.tq,NV[TOPS],'sí']);if(HIST.length>7200)HIST.shift()}
 function drawTrend(){const c=$('#tr'),dpr=Math.min(window.devicePixelRatio||1,2),w=c.clientWidth,h=c.clientHeight;if(!w||!h)return;
  if(c.width!==((w*dpr)|0)){c.width=(w*dpr)|0;c.height=(h*dpr)|0}const x=c.getContext('2d');if(!x)return;x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,w,h);
@@ -722,7 +742,9 @@ function drawTrend(){const c=$('#tr'),dpr=Math.min(window.devicePixelRatio||1,2)
  const xs=(i,n)=>L+pw*(1-(n-1-i)/(TRN-1)),ser=(arr,yf,col,dash,lw)=>{if(arr.length<2)return;x.beginPath();arr.forEach((v,i)=>{const px_=xs(i,arr.length),py=yf(v);i?x.lineTo(px_,py):x.moveTo(px_,py)});x.setLineDash(dash);x.strokeStyle=col;x.lineWidth=lw;x.stroke();x.setLineDash([])};
  if(TR.ld.length>1){x.beginPath();TR.ld.forEach((v,i)=>{const px_=xs(i,TR.ld.length),py=yL(v);i?x.lineTo(px_,py):x.moveTo(px_,py)});x.lineTo(xs(TR.ld.length-1,TR.ld.length),yL(0));x.lineTo(xs(0,TR.ld.length),yL(0));x.closePath();x.globalAlpha=.12;x.fillStyle=acc;x.fill();x.globalAlpha=1;ser(TR.ld,yL,mut,[2,3],1.4)}
  x.setLineDash([5,4]);x.strokeStyle=a3;x.lineWidth=1;x.beginPath();x.moveTo(L,yT(120));x.lineTo(L+pw,yT(120));x.stroke();x.setLineDash([]);x.fillStyle=a3;x.textAlign='left';x.fillText('alarma punto caliente 120 °C',L+4,yT(120)-3);
- ser(TR.oilE,yT,BL,[6,4],1.6);ser(TR.oil,yT,BL,[],2.2);ser(TR.hs,yT,OR,[],2.2)}
+ ser(TR.oilE,yT,BL,[6,4],1.6);ser(TR.oil,yT,BL,[],2.2);ser(TR.hs,yT,OR,[],2.2);
+ const nn=TR.oil.length;if(trHov>=0&&trHov<nn){const px_=xs(trHov,nn),tx=['hace '+nf((nn-1-trHov)*.5,1)+' h simuladas','Aceite: '+nf(TR.oil[trHov],1)+' °C','Esperado: '+nf(TR.oilE[trHov],1)+' °C','Punto caliente: '+nf(TR.hs[trHov],1)+' °C','Carga: '+nf(TR.ld[trHov],0)+' %'],bw=156,bx=px_+bw+8>w?px_-bw-8:px_+8;x.strokeStyle=css('--ink');x.setLineDash([2,3]);x.beginPath();x.moveTo(px_,Tp);x.lineTo(px_,Tp+phh);x.stroke();x.setLineDash([]);x.globalAlpha=.95;x.fillStyle=css('--pn');x.fillRect(bx,Tp,bw,76);x.globalAlpha=1;x.strokeStyle=line;x.strokeRect(bx,Tp,bw,76);x.fillStyle=css('--ink');x.textAlign='left';tx.forEach((q,i)=>x.fillText(q,bx+6,Tp+14+i*14))}
+ $('#stt').textContent='Desde el inicio: carga máxima '+nf(STAT.maxK,0)+' %, punto caliente máximo '+nf(STAT.maxHs,0)+' °C, '+nf(STAT.ovl,1)+' h simuladas con carga sobre 100 %. Por nivel de estado: '+NV.map((n,i)=>n+' '+nf(STAT.lv[i],1)+' h').join(', ')+'.'}
 // diagnóstico, estado y alarma
 let dxSig='';
 function paintStatus(F){const top=F.length?F[0].s:0,p=$('#pill');TOPS=top;p.textContent=NV[top];p.dataset.lv=top;
@@ -807,17 +829,23 @@ $('#rc').onclick=async()=>{try{await navigator.clipboard.writeText(TXT);$('#rs2'
 $('#rpdf').onclick=pdfReport;$('#rpn').onclick=()=>{try{window.print()}catch(err){$('#rs2').textContent='Usa Copiar informe.'}};
 
 /* ---------- 13. Efectos visuales ligados a la simulación ---------- */
-const CU=new T.Color(.85,.55,.32),HT=new T.Color(1,.4,.1),_c=new T.Color(),OC1=new T.Color(0xe2a43c),OC2=new T.Color(0xc4501a),PB1=new T.Color(0x6a4128),PB2=new T.Color(0x2a1a14),
- BC1=new T.Color(0x2f7fd0),BC2=new T.Color(0xd96aa0),COOL=new T.Color(0x6fb7ff),HOT=new T.Color(0xff7a2a),CF1=new T.Color(0xffd166),CF2=new T.Color(0x5ad1ff);
+const CU=new T.Color(.85,.55,.32),HT=new T.Color(1,.4,.1),_c=new T.Color(),OC1=new T.Color(0xe08a2c),OC2=new T.Color(0xb8501a),PB1=new T.Color(0x6a4128),PB2=new T.Color(0x2a1a14),
+ BC1=new T.Color(0x2f7fd0),BC2=new T.Color(0xd96aa0),COOL=new T.Color(0xd9781c),HOT=new T.Color(0xffb44d),CF1=new T.Color(0x7dff9a),CF2=new T.Color(0x1fc45a);
 const mkPts=(n,par,size,depthTest)=>{const g=new T.BufferGeometry(),pos=new Float32Array(n*3),col=new Float32Array(n*3);g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('color',new T.BufferAttribute(col,3));
  const p=new T.Points(g,new T.PointsMaterial({size,map:glowT,vertexColors:true,transparent:true,depthWrite:false,depthTest,sizeAttenuation:true}));p.frustumCulled=false;p.renderOrder=depthTest?3:9;par.add(p);return{p,pos,col,g}};
 // circulación conceptual del aceite: sube caliente por los devanados, baja enfriado por los radiadores
-const NO=48,OIL=mkPts(NO,S,.34,true),oilT=[],oilZ=[],oilPath=pathFn([[-1.95,.9,.35],[-1.95,2.9,1],[2.4,2.95,1],[3,2.92,.95],[3,.8,.1],[2.4,.8,.1],[0,.55,.2]]);
+const NO=48,OIL=mkPts(NO,S,.4,true),oilT=[],oilZ=[],oilPath=pathFn([[-1.95,.9,.35],[-1.95,2.9,1],[2.4,2.95,1],[3,2.92,.95],[3,.8,.1],[2.4,.8,.1],[0,.55,.2]]);
 for(let i=0;i<NO;i++){oilT.push(i/NO);oilZ.push((rnd()-.5)*1.8)}
 // flujo magnético alterno: oscila y cambia de color con el sentido instantáneo (fases desfasadas 120°)
 const NF=48,FXP=mkPts(NF,gCore,.62,false),fxPath=[pathFn([[-1.25,.95],[0,.95],[0,2.75],[-1.25,2.75]]),pathFn([[1.25,.95],[0,.95],[0,2.75],[1.25,2.75]])],fxZ=[];for(let i=0;i<NF;i++)fxZ.push((rnd()-.5)*.2);
 // trayectoria del flujo: dos lazos a lo largo de columnas y yugos (conceptual)
-const FXL=new T.Group();gCore.add(FXL);FXL.renderOrder=9;[[[-1.25,.95],[0,.95],[0,2.75],[-1.25,2.75]],[[1.25,.95],[0,.95],[0,2.75],[1.25,2.75]]].forEach(L=>{const m=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(L.map(p=>new T.Vector3(p[0],p[1],0)),true,'catmullrom',.04),64,.03,6,true),new T.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.3,depthTest:false,depthWrite:false}));m.renderOrder=9;FXL.add(m)});
+const FXL=new T.Group();gCore.add(FXL);FXL.renderOrder=9;[[[-1.25,.95],[0,.95],[0,2.75],[-1.25,2.75]],[[1.25,.95],[0,.95],[0,2.75],[1.25,2.75]]].forEach(L=>{const m=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(L.map(p=>new T.Vector3(p[0],p[1],0)),true,'catmullrom',.04),64,.03,6,true),new T.MeshBasicMaterial({color:0x2fd16a,transparent:true,opacity:.3,depthTest:false,depthWrite:false}));m.renderOrder=9;FXL.add(m)});
+// corriente: borne AT, aislador, conexión y espiras AT, acople magnético, espiras BT y aislador BT (conceptual)
+const NCp=40,cuC=legX.map(x=>{const hl=[],lh=[];for(let k=0;k<=24;k++){const a=Math.PI/2+k/24*Math.PI*6;hl.push([x+Math.cos(a)*.52,2.44-k/24*1.2,Math.sin(a)*.52])}
+ for(let k=0;k<=24;k++){const a=Math.PI/2+k/24*Math.PI*8;lh.push([x+Math.cos(a)*.36,1.25+k/24*1.2,Math.sin(a)*.36])}
+ return new T.CatmullRomCurve3([[x,5.2,HVZ],[x,3.0,HVZ],[x,2.55,.52]].concat(hl,lh,[[x,2.7,LVZ],[x,4.5,LVZ]]).map(V3),false,'catmullrom',.2)}),
+ cuS=cuC.map(c=>c.getSpacedPoints(400)),CUP=mkPts(NCp*3,S,.2,false);let cuU=0;
+const cuT=cuC.map(c=>{const m=new T.Mesh(new T.TubeGeometry(c,160,.018,6,false),new T.MeshBasicMaterial({color:0x2fd16a,transparent:true,opacity:.3,depthTest:false,depthWrite:false}));m.renderOrder=8;S.add(m);return m});
 // chispas esquemáticas, punto caliente y gotas
 const mkS=(g,c,r)=>{const s=new T.Mesh(sph(r,8),new T.MeshBasicMaterial({color:c,transparent:true,depthTest:false}));s.renderOrder=8;s.visible=false;g.add(s);return s};
 const pdS=[0,1,2,3,4,5].map(()=>mkS(gWind,0xd6b3ff,.035)),olS=[0,1,2,3].map(()=>mkS(gOltc,0xffe066,.03));
@@ -830,7 +858,7 @@ function visuals(dt,t){
  const hk=E.th.checked?1:.6,f=v=>clamp((v-55)/80,0,1)*hk,h=f(ST.hs),en=ST.en,K=ST.K,leak=(on('f_leak')||FS.corr>.65)&&ST.LV>.3;
  if(fc++%4===0)paintWind();
  [MT.lv,MT.hv].forEach(m=>m.emissive.setRGB(h*.6,h*.14,0));MT.core.emissive.setRGB(f(ST.core)*.25,f(ST.core)*.05,0);MT.rad.emissive.setRGB(f(ST.oil-8)*.3,f(ST.oil-8)*.07,0);
- MT.oil.color.lerpColors(OC1,OC2,clamp((ST.oil-30)/70,0,1));MT.oil.opacity=(.17+.12*h)*(1-sst(.05,.35,MD.ex))*(1-.55*Math.max(MD.cut,MD.xray));
+ MT.oil.color.lerpColors(OC1,OC2,clamp((ST.oil-30)/70,0,1));MT.oil.opacity=(.27+.1*h)*(1-sst(.05,.35,MD.ex))*(1-.55*Math.max(MD.cut,MD.xray));
  setDial(REF.oti,ST.oil/150);setDial(REF.wti,ST.hs/180);setDial(REF.mog,ST.LV);
  REF.fans.forEach(sg=>sg.rotation.z+=dt*ST.fanV);
  REF.oil.scale.y=ST.LV;MT.rust.opacity=FS.corr*.85;MT.stain.opacity=clamp(ST.pool*2.2,0,.9);MT.pool.opacity=clamp(ST.pool*2.5,0,.92);REF.pool.scale.setScalar(.15+ST.pool*1.1);
@@ -851,12 +879,16 @@ function visuals(dt,t){
  if(fxOn){const wt=t/1000*2.6;for(let i=0;i<NF;i++){const li=i<24?0:1,p_=wt+li*2.094,q=fxPath[li]((i%24)/24+.05*Math.sin(p_));FXP.pos[i*3]=q[0];FXP.pos[i*3+1]=q[1];FXP.pos[i*3+2]=fxZ[i];
   _c.copy(CF1).lerp(CF2,(Math.cos(p_)+1)/2);FXP.col[i*3]=_c.r;FXP.col[i*3+1]=_c.g;FXP.col[i*3+2]=_c.b}
   FXP.g.attributes.position.needsUpdate=true;FXP.g.attributes.color.needsUpdate=true}
+ // corriente de energía: rapidez y brillo según la carga, con pulso alterno desfasado 120° por fase
+ const cuOn=E.cu.checked&&en&&MD.ex<.05;CUP.p.visible=cuOn;cuT.forEach(m=>{m.visible=cuOn;m.material.opacity=.14+.24*Math.min(K,1.2)});
+ if(cuOn){cuU+=dt*(.03+.22*Math.min(K,1.3));for(let k=0;k<3;k++){const b=.45+.55*Math.pow(Math.sin(t/1000*2.6+k*2.094),2);for(let j=0;j<NCp;j++){const q=cuS[k][(((j/NCp+cuU+k*.13)%1)*400)|0],i=(k*NCp+j)*3;CUP.pos[i]=q.x;CUP.pos[i+1]=q.y;CUP.pos[i+2]=q.z;CUP.col[i]=.2*b;CUP.col[i+1]=b;CUP.col[i+2]=.42*b}}
+  CUP.g.attributes.position.needsUpdate=true;CUP.g.attributes.color.needsUpdate=true}
  if(SNS[0].visible)SNS.forEach((s,i)=>s.children[0].scale.setScalar(1+.3*Math.sin(t/260+i)))}
 
 /* ---------- 14. Calidad gráfica, tamaño, bucle y liberación de recursos ---------- */
 const SHELLM=PK.filter(m=>SHELL.indexOf(m.material)>=0);let shellSh=true,QL='alta',inView=true,raf=0,t0=0,uiAcc=0,trAcc=0,fpsT=0,fpsN=0,lastCut=-1,lastEx=-1,lastXr=-1;
 function setShadows(on_){R.shadowMap.enabled=on_;R.shadowMap.type=T.PCFSoftShadowMap;keyL.castShadow=on_;S.traverse(o=>{if(o.material){(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.needsUpdate=true)}})}
-function setQuality(q){QL=q;const dpr=window.devicePixelRatio||1;R.setPixelRatio(q==='alta'?Math.min(dpr,2):q==='media'?Math.min(dpr,1.5):1);fit();$('#ql').value=q}
+function setQuality(q){QL=q;const dpr=window.devicePixelRatio||1;R.setPixelRatio(q==='alta'?Math.min(dpr,2):q==='media'?Math.min(dpr,1.5):1);fit();$('#ql').value=q;if(q==='baja'&&R.shadowMap.enabled){$('#sh').checked=false;setShadows(false)}}
 $('#sh').onchange=e=>{setShadows(e.target.checked);logEv(0,'Sombras reales '+(e.target.checked?'activadas':'desactivadas'))};
 function fit(){const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;AF=w/h<1.2?Math.pow(1.2/(w/h),.7):1;cam.updateProjectionMatrix()}
 $('#ql').onchange=e=>{setQuality(e.target.value);logEv(0,'Calidad gráfica: '+e.target.selectedOptions[0].textContent.toLowerCase())};
@@ -878,8 +910,17 @@ function dispose(){cancelAnimationFrame(raf);const seen=new Set(),kill=o=>{if(!o
  RES.forEach(kill);if(envRT)envRT.dispose();R.dispose();if(R.forceContextLoss)R.forceContextLoss()}
 addEventListener('pagehide',dispose);
 
+const trC=$('#tr');trC.addEventListener('pointermove',e=>{const r=trC.getBoundingClientRect(),pw=r.width-78,n=TR.oil.length,i=n-1-Math.round((1-(e.clientX-r.left-38)/pw)*(TRN-1));trHov=i>=0&&i<n?i:-1;drawTrend()});trC.addEventListener('pointerleave',()=>{trHov=-1;drawTrend()});
+// pantalla completa: API nativa y, si el navegador no la ofrece (p. ej. iPhone), una capa fija que cubre la ventana
+(function(){const b=$('#fsb'),sv=d=>'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+d+'"/></svg>',
+ IE=sv('M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5'),IC=sv('M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'),nat=()=>document.fullscreenElement||document.webkitFullscreenElement,on=()=>nat()===box||box.classList.contains('fs');
+ const sync=()=>{const o=on();b.setAttribute('aria-pressed',o);b.setAttribute('aria-label',o?'Salir de pantalla completa':'Ver el modelo en pantalla completa');b.title=o?'Salir (Esc)':'Pantalla completa';b.innerHTML=(o?IC:IE)+'<span>'+(o?'Salir':'Pantalla completa')+'</span>';document.body.classList.toggle('fsl',box.classList.contains('fs'));fit()};
+ const exit=()=>{box.classList.remove('fs');if(nat()===box)(document.exitFullscreen||document.webkitExitFullscreen).call(document);sync()};
+ b.onclick=()=>{if(on()){exit();return}const rq=box.requestFullscreen||box.webkitRequestFullscreen,fb=()=>{box.classList.add('fs');sync()};if(!rq){fb();return}try{const r=rq.call(box);if(r&&r.catch)r.catch(fb)}catch(e){fb()}};
+ ['fullscreenchange','webkitfullscreenchange'].forEach(n=>document.addEventListener(n,sync));
+ addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('fs'))exit()});sync()})();
 /* ---------- Arranque ---------- */
-setShadows(false);setQuality(matchMedia('(pointer:coarse)').matches?'media':'alta');
+const crs=matchMedia('(pointer:coarse)').matches;setShadows(!crs);$('#sh').checked=!crs;setQuality(crs?'media':'alta');
 settle();readings();syncOut();uiTick();trAdd();logEv(0,'Simulación iniciada: transformador energizado con carga de 21 MVA (70 %)');
 applyCut(0);applyExplode(0);applyShell(0);fit();drawTrend();drawLife();
 raf=requestAnimationFrame(loop);
