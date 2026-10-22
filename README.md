@@ -39,27 +39,27 @@ Muestra cuánto consume cada casa, qué parte del transformador ocupa y cómo re
 
 **Qué incluye**
 
-- Transformador de **13 200 V a 220 V / 110 V** con capacidad elegible: 15, 25 (por defecto), 37,5, 50 o 75 kVA.
+- Transformador de **13 200 V a 240 V / 120 V** con capacidad elegible: 15, 25 (por defecto), 37,5, 50 o 75 kVA.
 - De 1 a 6 casas (3 por defecto), con 8 aparatos cada una.
 - Corriente de entrada, de las líneas L1 y L2 y del neutro, con animación de flujo.
 - Medidor de carga, punto caliente del devanado, aceite superior y desgaste del aislamiento.
 - Gráfica de los últimos 90 s con la carga apilada por casa y la temperatura.
 - Reparto de la capacidad por casa, en barra y en tabla.
-- Escenarios: Madrugada, Hora de la cena, Todo encendido, Apagar todo y Apagar solo los de 220 V.
+- Escenarios: Madrugada, Hora de la cena, Todo encendido, Apagar todo y Apagar solo los de 240 V.
 - Modo **un día completo** (lento: 2 min, normal: 1 min, rápido: 30 s), con horarios de encendido propios de cada casa.
 
 **Aparatos simulados**
 
 | Aparato | Tensión | Potencia |
 |---|---|---|
-| Luces | 110 V | 100 W |
-| Televisor | 110 V | 150 W |
-| Nevera | 110 V | 200 W |
-| Microondas | 110 V | 1200 W |
-| Plancha | 110 V | 1000 W |
-| Aire acondicionado | 220 V | 1800 W |
-| Estufa eléctrica | 220 V | 3000 W |
-| Ducha eléctrica | 220 V | 4500 W |
+| Luces | 120 V | 100 W |
+| Televisor | 120 V | 150 W |
+| Nevera | 120 V | 200 W |
+| Microondas | 120 V | 1200 W |
+| Plancha | 120 V | 1000 W |
+| Aire acondicionado | 240 V | 1800 W |
+| Estufa eléctrica | 240 V | 3000 W |
+| Ducha eléctrica | 240 V | 4500 W |
 
 **Niveles de estado:** Normal, Atención, Alerta y Crítico, según el punto caliente (98, 110 y 130 °C) y la carga (85, 100 y 120 %).
 
@@ -120,9 +120,9 @@ Referencia: guía de carga IEEE C57.91 (la fórmula del envejecimiento, los 110 
 | Parámetro | Poste | T-01 |
 |---|---|---|
 | Tensión de entrada | 13 200 V | 115 kV |
-| Tensión de salida | 220 V / 110 V | 13,8 kV |
+| Tensión de salida | 240 V / 120 V | 13,8 kV |
 | Capacidad | 25 kVA (15 a 75) | 30 MVA (18 MVA en ONAN) |
-| Corriente nominal | 113,6 A por línea | 150,6 A (alta) y 1255 A (baja) |
+| Corriente nominal | 104,2 A por línea | 150,6 A (alta) y 1255 A (baja) |
 | Frecuencia | n/d | 60 Hz |
 | Conexión e impedancia | n/d | YNd11, 9,5 % |
 | Ambiente | 30 °C | 30 °C (0 a 45) |
@@ -132,7 +132,7 @@ La verificación de cada valor contra normas y práctica real está en [`docs/da
 
 ## Verificación frente al mundo real (resumen)
 
-- **A corregir o aclarar:** el secundario del poste está rotulado 220/110 V. En Colombia las especificaciones de los operadores de red usan **240/120 V**; "110/220" es el nombre coloquial. Con 240 V la relación es 55:1 y la corriente nominal de 25 kVA es 104,2 A por línea.
+- **Corregido:** el secundario del poste usa **240/120 V**, como las especificaciones de los operadores de red colombianos (en el habla común se dice «220/110»). Con 240 V la relación es 55:1 y la corriente nominal de 25 kVA es 104,2 A por línea.
 - **Coinciden:** 13 200 V, 13,8 kV y 115 kV como niveles de tensión; los tamaños de 15 a 75 kVA y 30 MVA; la fórmula y las constantes del envejecimiento.
 - **Simplificaciones:** parámetros térmicos típicos pero de demostración, constantes de tiempo aceleradas, caída de tensión del T-01 algo baja, corriente de entrada sin factor de potencia.
 - **Por confirmar con las normas de pago:** umbrales de gases disueltos, humedad, rigidez dieléctrica y descargas parciales.
@@ -159,6 +159,10 @@ HTML, CSS y JavaScript sin servidor · three.js r128 (WebGL) · canvas 2D y SVG 
 - IEC. (2018). *IEC 60076-7:2018. Power transformers. Part 7: Loading guide for mineral-oil-immersed power transformers.*
 - Duval, M. (2002). A review of faults detectable by gas-in-oil analysis in transformers. *IEEE Electrical Insulation Magazine, 18*(3), 8-17.
 - Grieves, M. (2014). *Digital twin: Manufacturing excellence through virtual factory replication* [White paper].
+
+## Historial de cambios
+
+- **21 de octubre de 2026:** en `simulador.html` el secundario del poste pasó de 220/110 V a 240/120 V (tensiones, aparatos, corriente nominal y textos). `index.html` no cambió.
 
 ## Autor
 
