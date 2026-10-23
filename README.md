@@ -5,7 +5,7 @@ Dos simuladores web interactivos para entender cómo se carga, se calienta y env
 **Autor:** Julian David Ortiz Gaviria
 **Año:** 2026
 **Contexto:** proyecto asociado a una idea de investigación para trabajo de grado.
-**Licencia:** pendiente de definir por el autor.
+**Licencia:CC BY 4.0**
 
 > **Aviso:** todos los datos son simulados y los valores de los equipos son de demostración. Ninguna lectura proviene de sensores reales y el proyecto no sirve para operar ni diagnosticar equipos reales.
 
