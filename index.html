@@ -557,7 +557,7 @@ cv.addEventListener('pointerup',e=>{const was=ptr.size;ptr.delete(e.pointerId);i
 cv.addEventListener('pointercancel',e=>ptr.delete(e.pointerId));
 cv.addEventListener('wheel',e=>{e.preventDefault();auto=false;rdT*=1+e.deltaY*.001;clampCam()},{passive:false});
 cv.addEventListener('keydown',e=>{const k=e.key;let h=true;auto=false;
- if(k==='ArrowLeft')thT+=.12;else if(k==='ArrowRight')thT-=.12;else if(k==='ArrowUp')phT-=.08;else if(k==='ArrowDown')phT+=.08;else if(k==='+'||k==='=')rdT*=.92;else if(k==='-'||k==='_')rdT*=1.08;else h=false;
+ if(k==='ArrowLeft')thT+=.12;else if(k==='ArrowRight')thT-=.12;else if(k==='ArrowUp')phT-=.08;else if(k==='ArrowDown')phT+=.08;else if(k==='+'||k==='=')rdT*=.92;else if(k==='-'||k==='_')rdT*=1.08;else if(k==='Escape'&&selK){desel();h=false}else h=false;
  if(h){e.preventDefault();clampCam()}});
 cv.addEventListener('webglcontextlost',e=>{e.preventDefault();showMsg('Se perdió el contexto gráfico. Espera unos segundos o recarga la página.')});
 cv.addEventListener('webglcontextrestored',()=>{$('#vmsg').style.display='none'});
@@ -576,7 +576,7 @@ const chainVisible=o=>{for(;o;o=o.parent)if(!o.visible)return false;return true}
 function pick(e){const r=cv.getBoundingClientRect();NDC.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);RC.setFromCamera(NDC,cam);
  const oc=[MT.oltc,MT.oltcC,MT.oltcI],hits=RC.intersectObjects(PK.filter(chainVisible),false).filter(h=>{const p=h.point;
   if(MD.cut>.03&&p.x>W.x0&&p.x<W.x1&&p.y>W.y0&&p.y<W.y1&&p.z>WIN.z0)return false;if(MD.cut>.03&&oc.indexOf(h.object.material)>=0&&p.z>OLP[0].constant)return false;return true});
- const x=MD.xray>.5?(hits.find(h=>h.object.userData.k!=='tank')||hits[0]):hits[0];if(x)sel(x.object.userData.k)}
+ const x=MD.xray>.5?(hits.find(h=>h.object.userData.k!=='tank')||hits[0]):hits[0];if(x)sel(x.object.userData.k);else if(selK)desel()}
 
 /* ---------- 7. Información de cada parte ---------- */
 const INFO={
@@ -600,6 +600,8 @@ function clrSel(){RDO.forEach(o=>{if(o.parent)o.parent.remove(o)});RDO.length=0}
 function addRed(m){const mt=m.material,cp=mt.clippingPlanes;let r=RDM.get(cp);if(!r){r=new T.MeshBasicMaterial({color:0xff2a1a,transparent:true,opacity:.55,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-3,polygonOffsetUnits:-3,clippingPlanes:cp,clipIntersection:mt.clipIntersection,side:mt.side});RDM.set(cp,r)}
  let o;if(m.isInstancedMesh){o=new T.InstancedMesh(m.geometry,r,m.count);o.instanceMatrix=m.instanceMatrix;o.frustumCulled=false}else o=new T.Mesh(m.geometry,r);
  o.castShadow=o.receiveShadow=false;o.renderOrder=4;o.raycast=()=>{};m.add(o);RDO.push(o)}
+const INFO0=$('#info').innerHTML;
+function desel(){clrSel();selK='';LIST.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));$('#info').innerHTML=INFO0}
 function sel(k){clrSel();PK.forEach(m=>{if(m.userData.k===k)addRed(m)});selK=k;LIST.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));const i=INFO[k];
  $('#info').innerHTML='<h2>'+i[0]+'</h2><p>'+i[1]+'</p><p class="twin"><span class="dot"></span><b>El gemelo digital vigilaría:</b> '+i[2]+'</p><div class="rel" id="rel"></div>';updRel()}
 function updRel(){const r=$('#rel');if(!r||!selK)return;r.innerHTML=INFO[selK][4].map(id=>{const v=VARS.find(x=>x.id===id);return v?'<span>'+v.n+' ('+v.t+')</span><b>'+v.f(M)+'</b>':''}).join('')}
