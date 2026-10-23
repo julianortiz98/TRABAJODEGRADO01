@@ -75,9 +75,9 @@ button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px soli
 .chips{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .chip{text-align:left;padding:6px 8px;border-width:2px;line-height:1.2}
 .chip small{display:block;color:var(--mut);font-size:.74rem}
-.v110{border-color:var(--c110)}.v220{border-color:var(--c220)}
+.v120{border-color:var(--c110)}.v240{border-color:var(--c220)}
 .chip[aria-pressed=true]{color:#fff}.chip[aria-pressed=true] small{color:#ffffffcc}
-.v110[aria-pressed=true]{background:var(--c110)}.v220[aria-pressed=true]{background:var(--c220)}
+.v120[aria-pressed=true]{background:var(--c110)}.v240[aria-pressed=true]{background:var(--c220)}
 .sum{margin:9px 0 0;font-size:.88rem;color:var(--mut)}
 .why p{margin:.4em 0;max-width:80ch}
 details{margin-top:8px}summary{cursor:pointer;font-weight:700}
@@ -86,6 +86,11 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
 @media(max-width:560px){details dl{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.flow,.fl{animation:none}}
 .nv{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+#v3{position:relative;height:clamp(320px,56vh,560px);border-radius:10px;overflow:hidden;background:linear-gradient(#7fa6c9,#dbe7ef)}
+#v3b{position:absolute;left:10px;top:10px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:.82rem;max-width:calc(100% - 20px)}
+#v3t{position:absolute;right:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}#v3t button{min-height:36px}#v3t button[aria-pressed=true]{background:var(--c110);color:#fff;border-color:transparent}
+#v3m{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:20px;color:#1b2a38;pointer-events:none}#v3m:empty{display:none}
+#v3:fullscreen{width:100%;height:100%;border-radius:0}#v3:-webkit-full-screen{width:100%;height:100%;border-radius:0}#v3.fs{position:fixed;inset:0;z-index:60;height:100vh;height:100dvh;border-radius:0}body.fsl{overflow:hidden}
 .nv a{padding:7px 14px;border:1px solid var(--line);border-radius:99px;color:var(--ink);text-decoration:none;font-weight:600;background:var(--card)}
 .nv a[aria-current=page]{background:var(--acc,var(--c110));color:#fff;border-color:transparent}
 .nv a:focus-visible{outline:3px solid var(--acc,var(--c110));outline-offset:2px}
@@ -100,7 +105,7 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
 <div class="top">
   <section class="card" aria-label="El transformador">
     <h2 class="ch">El transformador, en vivo</h2>
-    <svg viewBox="0 0 460 205" role="img" aria-label="Transformador con entrada de 13 200 voltios y salida de 220 y 110 voltios, con las corrientes de cada línea">
+    <svg viewBox="0 0 460 205" role="img" aria-label="Transformador con entrada de 13 200 voltios y salida de 240 y 120 voltios, con las corrientes de cada línea">
       <text x="6" y="24">Red 13 200 V</text>
       <path class="w" d="M6 50H84M6 156H84"/><path class="fl" id="f_i1" d="M6 50H84"/><path class="fl" id="f_i2" d="M6 156H84"/>
       <text id="ti" x="6" y="108">0 A</text><text x="6" y="123" style="font-weight:400;font-size:11px">corriente de entrada</text>
@@ -112,10 +117,10 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
       <path class="w l1" d="M182 52H330"/><path class="w ln" d="M182 102H330"/><path class="w l2" d="M182 152H330"/>
       <path class="fl" id="f_o1" d="M182 52H330"/><path class="fl" id="f_on" d="M182 102H330"/><path class="fl" id="f_o2" d="M182 152H330"/>
       <text id="t1" x="190" y="44">L1: 0 A</text><text id="tn" x="190" y="94">N: 0 A</text><text id="t2" x="190" y="144">L2: 0 A</text>
-      <text id="v1" x="190" y="76" style="fill:var(--c110)">110 V</text><text id="v2" x="190" y="126" style="fill:var(--c110)">110 V</text>
+      <text id="v1" x="190" y="76" style="fill:var(--c110)">120 V</text><text id="v2" x="190" y="126" style="fill:var(--c110)">120 V</text>
       <text x="338" y="57">L1</text><text x="338" y="107">N</text><text x="338" y="157">L2</text>
       <path d="M418 52V152M412 52h6M412 152h6" fill="none" stroke-width="3" style="stroke:var(--c220)"/>
-      <text id="v220" x="406" y="107" text-anchor="end" style="fill:var(--c220)">220 V</text>
+      <text id="v240" x="406" y="107" text-anchor="end" style="fill:var(--c220)">240 V</text>
     </svg>
     <div class="stats4">
       <div class="stat"><b id="sp">0 A</b><span>Entrada (13 200 V)</span><span id="sp2">0 % de su nominal</span><div class="mini"><i id="spb"></i></div></div>
@@ -138,6 +143,12 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
   </section>
 </div>
 
+<section class="card mt" aria-label="Vista 3D del poste">
+  <h2 class="ch">El poste, el transformador y las casas, en 3D</h2>
+  <div id="v3"><div id="v3b" aria-live="off"></div><div id="v3t"><button type="button" id="v3c" aria-pressed="false">Ver por dentro</button><button type="button" id="v3r">Restablecer cámara</button><button type="button" id="v3f" aria-pressed="false">Pantalla completa</button></div><div id="v3m" role="alert"></div></div>
+  <p class="small" style="margin:6px 0 0">Arrastra para girar y usa la rueda o dos dedos para acercar. Las partículas verdes son la energía: van más rápido cuanto mayor es la carga, por la línea de 13 200 V y por la acometida de cada casa. Con «Ver por dentro» se ve el aceite (naranja), el núcleo y las bobinas, que se calientan según el punto caliente del modelo. Las ventanas se iluminan según lo que consume cada casa y la luz del día sigue la hora simulada. Es una representación conceptual, no está a escala exacta.</p>
+</section>
+
 <section class="card mt" aria-label="Carga y temperatura en el tiempo">
   <h2 class="ch">Qué pasa a lo largo del tiempo</h2>
   <div class="dayc">
@@ -148,7 +159,8 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
   <div class="tl" aria-hidden="true"><i id="tlm"></i></div>
   <div class="lg" id="lg"></div>
   <canvas id="cv" role="img" aria-label="Gráfico de la carga de cada casa y de la temperatura del transformador en los últimos 90 segundos"></canvas>
-  <p class="small" style="margin:6px 0 0">Muestra los últimos 90 segundos. Arriba, la carga de cada casa apilada contra la capacidad. Abajo, la temperatura. Apaga aparatos: la carga cae al instante, pero la temperatura baja despacio porque el aceite y los devanados guardan calor (inercia térmica). El tiempo del simulador va acelerado.</p>
+  <p class="small" style="margin:6px 0 0">Muestra los últimos 90 segundos. Arriba, la carga de cada casa apilada contra la capacidad. Abajo, la temperatura. Apaga aparatos: la carga cae al instante, pero la temperatura baja despacio porque el aceite y los devanados guardan calor (inercia térmica). El tiempo del simulador va acelerado. Pasa el cursor o el dedo sobre el gráfico para ver los valores exactos.</p>
+  <p class="small" id="stt" style="margin:6px 0 0"></p>
 </section>
 
 <section class="card mt" aria-label="Reparto de la carga entre casas">
@@ -159,7 +171,7 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
 </section>
 
 <div class="row">
-  <button data-p="0">Madrugada</button><button data-p="1">Hora de la cena</button><button data-p="2">Todo encendido</button><button data-p="3">Apagar todo</button><button id="off220">Apagar solo los de 220 V</button>
+  <button data-p="0">Madrugada</button><button data-p="1">Hora de la cena</button><button data-p="2">Todo encendido</button><button data-p="3">Apagar todo</button><button id="off240">Apagar solo los de 240 V</button><button id="unb">Desequilibrio (solo L1)</button>
   <span class="sp"></span>
   <button id="add">Agregar casa</button><button id="del">Quitar casa</button>
 </div>
@@ -167,14 +179,15 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
 
 <section class="card why mt" aria-label="Cómo lo reparte">
   <h2 class="ch">¿Cómo “reparte” el voltaje?</h2>
-  <p>No lo reparte: lo fija. La relación de vueltas (13 200 V a 220 V, unas 60 a 1) hace que entre L1 y L2 haya siempre cerca de 220 V, y entre cada línea y el neutro cerca de 110 V. Lo que cambia con cada casa es la <b>corriente</b>: cada aparato toma I = P / V, y la potencia de todas las casas se suma en el transformador.</p>
-  <p>Un aparato de 110 V usa una línea y el neutro. Uno de 220 V usa las dos líneas. Si las casas cargan más una línea que la otra, el neutro lleva la diferencia. Cuando la suma supera los kVA del transformador, el aceite y los devanados se calientan, el aislamiento envejece más rápido y el voltaje baja un poco.</p>
+  <p>No lo reparte: lo fija. La relación de vueltas (13 200 V a 240 V, unas 55 a 1) hace que entre L1 y L2 haya siempre cerca de 240 V, y entre cada línea y el neutro cerca de 120 V (en el habla común se les dice 220 y 110 V). Lo que cambia con cada casa es la <b>corriente</b>: cada aparato toma I = P / V, y la potencia de todas las casas se suma en el transformador.</p>
+  <p>Un aparato de 120 V usa una línea y el neutro. Uno de 240 V usa las dos líneas. Si las casas cargan más una línea que la otra, el neutro lleva la diferencia. Cuando la suma supera los kVA del transformador, el aceite y los devanados se calientan, el aislamiento envejece más rápido y el voltaje baja un poco.</p>
   <p style="color:var(--mut)">Eso es lo que vigila un gemelo digital: con la carga calcula temperatura y envejecimiento y avisa antes del daño. Modelo simplificado: aparatos resistivos (1 kVA equivale a 1 kW), ambiente de 30 °C y ecuaciones de régimen estable con inercia térmica simulada.</p>
+  <p class="small"><b>Hipótesis del modelo (valores de demostración, no mediciones):</b> factor de potencia 1; caída de tensión de 3,5 % a plena carga; ambiente fijo de 30 °C; calentamiento simplificado tipo IEEE C57.91 (exponente 0,8, relación de pérdidas 5, 23 K de punto caliente) con constante de tiempo de 3 s de reloj real, sin calibrar con un transformador real. No se declara conformidad con ninguna norma.</p>
   <details><summary>Qué significa cada variable</summary>
   <dl>
     <dt>Capacidad (kVA)</dt><dd>La potencia máxima que el transformador entrega sin calentarse de más.</dd>
     <dt>Carga (kW y %)</dt><dd>Lo que consumen todas las casas ahora, comparado con la capacidad.</dd>
-    <dt>Corriente de línea</dt><dd>Lo que circula por cada cable vivo (L1 y L2). Lo nominal por línea es la capacidad dividida entre 220 V.</dd>
+    <dt>Corriente de línea</dt><dd>Lo que circula por cada cable vivo (L1 y L2). Lo nominal por línea es la capacidad dividida entre 240 V.</dd>
     <dt>Neutro</dt><dd>Lleva la diferencia entre L1 y L2. Si las casas están equilibradas, casi no circula corriente.</dd>
     <dt>Punto caliente y aceite</dt><dd>Temperatura del punto más caliente del devanado y del aceite de arriba. El aislamiento de papel sufre con el punto caliente.</dd>
     <dt>Desgaste</dt><dd>Cuántas veces más rápido que lo normal envejece el aislamiento (1× es lo normal con 110 °C en el punto caliente).</dd>
@@ -182,9 +195,10 @@ details dt{font-weight:700}details dd{margin:0;color:var(--mut)}
   </dl></details>
 </section>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const $=s=>document.querySelector(s),f=(n,d=1)=>n.toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d}),set=(id,v)=>{$('#'+id).textContent=v};
-const AP=[["💡","Luces",110,100],["📺","Televisor",110,150],["🧊","Nevera",110,200],["🍲","Microondas",110,1200],["👕","Plancha",110,1000],["❄️","Aire acondicionado",220,1800],["🔥","Estufa eléctrica",220,3000],["🚿","Ducha eléctrica",220,4500]];
+const AP=[["💡","Luces",120,100],["📺","Televisor",120,150],["🧊","Nevera",120,200],["🍲","Microondas",120,1200],["👕","Plancha",120,1000],["❄️","Aire acondicionado",240,1800],["🔥","Estufa eléctrica",240,3000],["🚿","Ducha eléctrica",240,4500]];
 const COL=['#0f8b8d','#c9803a','#7a5fd0','#d1495b','#4f9d2d','#2f6fb3'],CL=['#2e8b57','#d9a400','#e27a1b','#c0392b'];
 const PRE=[[1,0,1,0,0,0,0,0],[1,1,1,1,0,0,1,0],[1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0]];
 const SCH=[[[5.5,7],[18,23.5]],[[18.5,23]],[[0,24]],[[6.8,7.1],[12.2,12.6],[19,19.3]],[[6.2,7],[20,20.6]],[[12.5,17.5],[21,24],[0,1.5]],[[6,7.3],[12,13.3],[18,19.5]],[[5.5,6.2],[18.8,19.4],[21.3,21.8]]];
@@ -193,8 +207,8 @@ const sched=(i,j,hr)=>{if(!MASK[i%6][j])return 0;const h=((hr-SHIFT[i%6])%24+24)
 const LV=[['var(--ok)','Normal','Opera con holgura.'],['var(--warn)','Atención','Cerca de su límite: conviene vigilar.'],['var(--hi)','Alerta','Sobrecarga: el aislamiento envejece más rápido.'],['var(--bad)','Crítico','Sobrecarga severa: hay que reducir la carga ya.']];
 const lvl=(h,K)=>Math.max(h<98?0:h<110?1:h<130?2:3,K<.85?0:K<1?1:K<1.2?2:3);
 const MAXS=360,cap=()=>+$('#kva').value*1000;
-let H=[[1,1,1,0,0,0,0,0],[1,0,1,0,0,0,1,0],[1,1,0,0,0,0,0,0]],auto=false,playing=false,hour=0,oil=30,hs=30,tH=30,C={P:0,I1:0,I2:0,per:[]},sig='',S=[],last=performance.now(),acc=0;
-function calc(){let I1=0,I2=0,P=0;const per=H.map((h,i)=>{let a=0,b=0,p=0;h.forEach((on,j)=>{if(!on)return;const V=AP[j][2],W=AP[j][3],I=W/V;p+=W;if(V==220){a+=I;b+=I}else if((i+j)%2)b+=I;else a+=I});I1+=a;I2+=b;P+=p;return{a,b,p}});return{I1,I2,P,per}}
+let hov=-1,ST2={maxP:0,maxHs:30,ovl:0,lv:[0,0,0,0]},H=[[1,1,1,0,0,0,0,0],[1,0,1,0,0,0,1,0],[1,1,0,0,0,0,0,0]],auto=false,playing=false,hour=0,oil=30,hs=30,tH=30,C={P:0,I1:0,I2:0,per:[]},sig='',S=[],last=performance.now(),acc=0;
+function calc(){let I1=0,I2=0,P=0;const per=H.map((h,i)=>{let a=0,b=0,p=0;h.forEach((on,j)=>{if(!on)return;const V=AP[j][2],W=AP[j][3],I=W/V;p+=W;if(V==240){a+=I;b+=I}else if((i+j)%2)b+=I;else a+=I});I1+=a;I2+=b;P+=p;return{a,b,p}});return{I1,I2,P,per}}
 const kvs=()=>f(cap()/1000,cap()%1000?1:0);
 // medidor
 const pt=(p,r)=>{const a=Math.PI*(1-p/140);return[110+r*Math.cos(a),105-r*Math.sin(a)]};
@@ -218,9 +232,9 @@ function refresh(){sig=JSON.stringify(H);C=calc();renderHouses();renderShare();u
 // panel en vivo
 const bc=p=>p>100?CL[3]:p>80?CL[1]:'var(--c110)',bar=(id,p)=>{const e=$('#'+id);e.style.width=Math.min(p,100)+'%';e.style.background=bc(p)};
 const flow=(id,I,Im)=>{const e=$('#'+id);e.style.setProperty('--d',Math.max(.25,1.5-Math.min(I/Im,1.2)*1.1)+'s');e.style.opacity=I>.05?1:.1};
-function ui(){const c=cap(),K=C.P/c,V=220*(1-.035*Math.min(K,2)),Ir=c/220,Ip=C.P/13200,Ipr=c/13200,In=Math.abs(C.I1-C.I2),L=lvl(hs,K),lv=LV[L],d=hs-tH;
+function ui(){const c=cap(),K=C.P/c,V=240*(1-.035*Math.min(K,2)),Ir=c/240,Ip=C.P/13200,Ipr=c/13200,In=Math.abs(C.I1-C.I2),L=lvl(hs,K),lv=LV[L],d=hs-tH;
  set('ti',f(Ip,2)+' A');set('t1','L1: '+f(C.I1)+' A');set('t2','L2: '+f(C.I2)+' A');set('tn','N: '+f(In)+' A');
- set('v1',f(V/2,0)+' V');set('v2',f(V/2,0)+' V');set('v220',f(V,0)+' V');set('kvaT',kvs()+' kVA');set('kwT',f(C.P/1000,1)+' kW');
+ set('v1',f(V/2,0)+' V');set('v2',f(V/2,0)+' V');set('v240',f(V,0)+' V');set('kvaT',kvs()+' kVA');set('kwT',f(C.P/1000,1)+' kW');
  set('sp',f(Ip,2)+' A');set('sp2',f(Ip/Ipr*100,0)+' % de su nominal');bar('spb',Ip/Ipr*100);
  set('s1',f(C.I1)+' A');set('s1p',f(C.I1/Ir*100,0)+' % de su nominal');bar('s1b',C.I1/Ir*100);
  set('s2',f(C.I2)+' A');set('s2p',f(C.I2/Ir*100,0)+' % de su nominal');bar('s2b',C.I2/Ir*100);
@@ -240,12 +254,12 @@ function chart(){const cv=$('#cv'),W=cv.clientWidth,Hh=cv.clientHeight;if(!W)ret
  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,Hh);
  const cs=getComputedStyle(document.documentElement),ink=cs.getPropertyValue('--ink').trim(),mut=cs.getPropertyValue('--mut').trim(),ln=cs.getPropertyValue('--line').trim();
  const Lm=48,Rm=10,pw=W-Lm-Rm,dx=pw/(MAXS-1),X=k=>Lm+pw-(S.length-1-k)*dx,F='system-ui, sans-serif';
- const y0=20,y1=150,peak=S.reduce((m,s)=>Math.max(m,s.tot),0),ym=peak>110?Math.ceil(peak*1.1/50)*50:120,Y=v=>y1-v/ym*(y1-y0);
+ const cp=cap(),y0=20,y1=150,peak=S.reduce((m,s)=>Math.max(m,s.tot/cp*100),0),ym=peak>110?Math.ceil(peak*1.1/50)*50:120,Y=v=>y1-v/ym*(y1-y0);
  g.lineWidth=1;g.strokeStyle=ln;g.fillStyle=mut;g.font='11px '+F;g.textAlign='right';
  for(let v=0;v<=ym;v+=50){const y=Y(v);g.beginPath();g.moveTo(Lm,y);g.lineTo(W-Rm,y);g.stroke();g.fillText(v+' %',Lm-6,y+4)}
  g.fillStyle=ink;g.font='600 12px '+F;g.textAlign='left';g.fillText('Carga de las casas (% de la capacidad del transformador)',Lm,12);
  if(S.length>1){g.save();g.beginPath();g.rect(Lm,y0-2,pw,y1-y0+2);g.clip();const n=Math.max(...S.map(s=>s.per.length));let base=S.map(()=>0);
-  for(let i=0;i<n;i++){const top=S.map((s,k)=>base[k]+(s.per[i]||0));g.beginPath();S.forEach((s,k)=>{k?g.lineTo(X(k),Y(top[k])):g.moveTo(X(k),Y(top[k]))});for(let k=S.length-1;k>=0;k--)g.lineTo(X(k),Y(base[k]));g.closePath();g.fillStyle=COL[i];g.globalAlpha=.85;g.fill();g.globalAlpha=1;base=top}
+  for(let i=0;i<n;i++){const top=S.map((s,k)=>base[k]+(s.per[i]||0)/cp*100);g.beginPath();S.forEach((s,k)=>{k?g.lineTo(X(k),Y(top[k])):g.moveTo(X(k),Y(top[k]))});for(let k=S.length-1;k>=0;k--)g.lineTo(X(k),Y(base[k]));g.closePath();g.fillStyle=COL[i];g.globalAlpha=.85;g.fill();g.globalAlpha=1;base=top}
   g.restore()}
  g.setLineDash([5,4]);g.strokeStyle=CL[3];g.beginPath();g.moveTo(Lm,Y(100));g.lineTo(W-Rm,Y(100));g.stroke();g.setLineDash([]);
  g.fillStyle=CL[3];g.font='11px '+F;g.fillText('Capacidad (100 %)',Lm+6,Y(100)-4);
@@ -256,8 +270,9 @@ function chart(){const cv=$('#cv'),W=cv.clientWidth,Hh=cv.clientHeight;if(!W)ret
  [[98,CL[1]],[110,CL[2]],[130,CL[3]]].forEach(([t,c])=>{g.setLineDash([4,4]);g.strokeStyle=c;g.beginPath();g.moveTo(Lm,Y2(t));g.lineTo(W-Rm,Y2(t));g.stroke();g.setLineDash([]);g.fillStyle=c;g.font='10px '+F;g.textAlign='right';g.fillText(t+' °C',W-Rm-2,Y2(t)-3)});
  const path=(key,col,w,dash)=>{if(S.length<2)return;g.beginPath();S.forEach((s,k)=>{const y=Y2(Math.min(150,Math.max(30,s[key])));k?g.lineTo(X(k),y):g.moveTo(X(k),y)});g.setLineDash(dash||[]);g.strokeStyle=col;g.lineWidth=w;g.stroke();g.setLineDash([]);g.lineWidth=1};
  path('oil',mut,1.6);path('tg',mut,1.3,[3,4]);path('hs',ink,2.4);
+ if(hov>=0&&hov<S.length){const q=S[hov],cx=X(hov),tx=['hace '+f((S.length-1-hov)*.25,0)+' s (reloj real)','Carga: '+f(q.tot/1000,2)+' kW ('+f(q.tot/cp*100,0)+' %)','Punto caliente: '+f(q.hs,0)+' °C','Aceite: '+f(q.oil,0)+' °C'],bw=160,bx=cx+bw+8>W?cx-bw-8:cx+8;g.strokeStyle=ink;g.setLineDash([2,3]);g.beginPath();g.moveTo(cx,y0);g.lineTo(cx,b);g.stroke();g.setLineDash([]);g.globalAlpha=.95;g.fillStyle=cs.getPropertyValue('--card').trim();g.fillRect(bx,y0,bw,62);g.globalAlpha=1;g.strokeStyle=ln;g.strokeRect(bx,y0,bw,62);g.fillStyle=ink;g.font='11px '+F;g.textAlign='left';tx.forEach((t,i)=>g.fillText(t,bx+6,y0+14+i*14))}
  g.fillStyle=mut;g.font='11px '+F;g.textAlign='left';g.fillText('hace 90 s',Lm,Hh-4);g.textAlign='right';g.fillText('ahora',W-Rm,Hh-4)}
-function sample(){const c=cap();S.push({per:C.per.map(q=>q.p/c*100),tot:C.P/c*100,hs,oil,tg:tH});if(S.length>MAXS)S.shift()}
+function sample(){S.push({per:C.per.map(q=>q.p),tot:C.P,hs,oil,tg:tH});if(S.length>MAXS)S.shift()}
 // simulación
 const manual=()=>{auto=false;playing=false};
 function tick(){const now=performance.now(),dt=Math.min((now-last)/1000,.5);last=now;
@@ -265,16 +280,121 @@ function tick(){const now=performance.now(),dt=Math.min((now-last)/1000,.5);last
  if(JSON.stringify(H)!==sig){sig=JSON.stringify(H);C=calc();renderHouses();renderShare()}
  const K=C.P/cap(),tO=30+55*Math.pow((1+5*K*K)/6,.8);tH=tO+23*Math.pow(K,1.6);
  const a=1-Math.exp(-dt/3);oil+=(tO-oil)*a;hs+=(tH-hs)*a;
+ ST2.maxP=Math.max(ST2.maxP,K*100);ST2.maxHs=Math.max(ST2.maxHs,hs);if(playing){const dh=dt/(+$('#spd').value)*24;if(K>1)ST2.ovl+=dh;ST2.lv[lvl(hs,K)]+=dh}
+ set('stt','Máximos: carga '+f(ST2.maxP,0)+' %, punto caliente '+f(ST2.maxHs,0)+' °C. Durante el día simulado: '+f(ST2.ovl,1)+' h con carga sobre la capacidad; por nivel: '+LV.map((l,i)=>l[1]+' '+f(ST2.lv[i],1)+' h').join(', ')+'.');
  acc+=dt;if(acc>=.25){acc-=.25;sample()}
- ui();chart()}
+ ui();if(!document.hidden)chart()}
 $('#houses').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;manual();H[+b.dataset.i][+b.dataset.j]^=1;refresh()});
 document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{manual();H=H.map(()=>PRE[+b.dataset.p].slice());refresh()});
-$('#off220').onclick=()=>{manual();H=H.map(h=>h.map((on,j)=>AP[j][2]==220?0:on));refresh()};
+$('#off240').onclick=()=>{manual();H=H.map(h=>h.map((on,j)=>AP[j][2]==240?0:on));refresh()};
+$('#unb').onclick=()=>{manual();H=H.map((h,i)=>AP.map((a,j)=>a[2]==120&&(i+j)%2==0?1:0));refresh()};
 $('#add').onclick=()=>{if(H.length<6){H.push(PRE[0].slice());refresh()}};
 $('#del').onclick=()=>{if(H.length>1){H.pop();refresh()}};
 $('#kva').onchange=()=>{renderHouses();renderShare();ui()};
 $('#play').onclick=()=>{if(playing){playing=false}else{auto=true;playing=true;H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)))}refresh()};
-$('#rst').onclick=()=>{hour=0;if(auto)H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)));refresh()};
+$('#rst').onclick=()=>{hour=0;S.length=0;oil=hs=30;ST2={maxP:0,maxHs:30,ovl:0,lv:[0,0,0,0]};if(auto)H=H.map((h,i)=>AP.map((_,j)=>sched(i,j,hour)));refresh()};
+// ===== Vista 3D del poste, el transformador y las casas (conceptual, conectada al modelo) =====
+(function(){
+const box=$('#v3'),msg=$('#v3m'),T=window.THREE;
+if(!T){msg.textContent='No se pudo cargar la biblioteca 3D (Three.js). Revisa la conexión; el resto del simulador funciona igual.';return}
+let R=null;try{R=new T.WebGLRenderer({antialias:true,alpha:true})}catch(e){}
+if(!R||!R.getContext()){msg.textContent='Este navegador no pudo iniciar WebGL; la vista 3D no está disponible. El resto del simulador funciona igual.';return}
+try{
+const coarse=matchMedia('(pointer:coarse)').matches,still=matchMedia('(prefers-reduced-motion:reduce)').matches,cl=(x,a,b)=>Math.max(a,Math.min(b,x)),X90=Math.PI/2;
+let sd=11;const rn=()=>(sd=sd*16807%2147483647)/2147483647;
+R.outputEncoding=T.sRGBEncoding;R.toneMapping=T.ACESFilmicToneMapping;R.setPixelRatio(Math.min(devicePixelRatio||1,coarse?1.5:2));R.shadowMap.enabled=!coarse;R.shadowMap.type=T.PCFSoftShadowMap;
+const cvs=R.domElement;cvs.style.cssText='display:block;width:100%;height:100%;touch-action:none;cursor:grab';cvs.setAttribute('role','img');cvs.setAttribute('aria-label','Vista 3D de un poste con el transformador y las casas que alimenta');box.prepend(cvs);
+const S=new T.Scene(),cam=new T.PerspectiveCamera(38,1,.1,200);S.fog=new T.Fog(0xdbe7ef,32,80);
+const ct=(w,h,fn,rp)=>{const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;t.anisotropy=4;if(rp){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rp[0],rp[1])}return t};
+const wood=ct(128,256,(x,w,h)=>{x.fillStyle='#6b4a2e';x.fillRect(0,0,w,h);for(let i=0;i<260;i++){const v=40+rn()*50|0;x.fillStyle='rgba('+(v+50)+','+(v+20)+','+v+','+(.15+rn()*.35)+')';x.fillRect(rn()*w,0,1+rn()*2,h)}for(let i=0;i<14;i++){x.fillStyle='rgba(30,18,8,.5)';x.beginPath();x.ellipse(rn()*w,rn()*h,2+rn()*3,5+rn()*8,0,0,6.3);x.fill()}},[1,3]);
+const grd=ct(128,128,(x,w,h)=>{x.fillStyle='#4a5a3a';x.fillRect(0,0,w,h);for(let i=0;i<1500;i++){const v=60+rn()*60|0;x.fillStyle='rgba('+(v-10)+','+(v+20)+','+(v-20)+',.5)';x.fillRect(rn()*w,rn()*h,2,2+rn()*3)}},[26,26]);
+const glow=ct(64,64,(x,w,h)=>{const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'#fff');g.addColorStop(.35,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,w,h)});
+try{const pm=new T.PMREMGenerator(R),eq=ct(256,128,(x,w,h)=>{const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,'#eef4fa');g.addColorStop(.45,'#b9c8d6');g.addColorStop(.5,'#8d9aa6');g.addColorStop(.53,'#555b60');g.addColorStop(1,'#2a2e32');x.fillStyle=g;x.fillRect(0,0,w,h);x.fillStyle='#fff';[[30,20,45,13],[105,15,35,10],[180,22,50,14]].forEach(q=>x.fillRect(q[0],q[1],q[2],q[3]))});S.environment=pm.fromEquirectangular(eq).texture;pm.dispose()}catch(e){}
+const M=(c,r,m,o)=>new T.MeshStandardMaterial(Object.assign({color:c,roughness:r,metalness:m},o)),P=(c,r,m,o)=>new T.MeshPhysicalMaterial(Object.assign({color:c,roughness:r,metalness:m,clearcoat:.5,clearcoatRoughness:.25},o));
+const mWood=M(0xffffff,.9,0,{map:wood}),mPaint=P(0x7d9186,.55,.35,{side:T.DoubleSide,transparent:true}),mHV=P(0x7a4a2c,.2,0,{clearcoat:1,clearcoatRoughness:.08}),mLV=P(0xb5babd,.2,0,{clearcoat:1,clearcoatRoughness:.08}),
+ mSteel=M(0xaab3ba,.4,.6),mAl=M(0x9aa2a8,.4,.7),mBlk=M(0x15171a,.6,.4),mGnd=M(0xffffff,1,0,{map:grd}),mOil=M(0xe08a2c,.2,0,{transparent:true,opacity:.42,depthWrite:false}),mCore=M(0x59636b,.5,.6),mCoil=M(0xc87a45,.35,.7,{side:T.DoubleSide});
+const add=(g,geo,m,x,y,z,sh)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=sh!==false;o.receiveShadow=true;g.add(o);return o};
+const shed=(n,p,r0,r1)=>{const q=[new T.Vector2(r0,0)];for(let i=0;i<n;i++){const y=i*p;q.push(new T.Vector2(r0,y+.001),new T.Vector2(r1,y+p*.15),new T.Vector2(r1*.95,y+p*.28),new T.Vector2(r0*1.2,y+p*.6),new T.Vector2(r0,y+p*.7))}q.push(new T.Vector2(r0,n*p));return q};
+const hemi=new T.HemisphereLight(0xcfe3f5,0x3a3f35,.5),sun=new T.DirectionalLight(0xfff1dc,1.3);S.add(hemi,sun);sun.castShadow=!coarse;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-22,right:22,top:22,bottom:-22,near:1,far:70});sun.shadow.camera.updateProjectionMatrix();sun.shadow.bias=-.0005;sun.shadow.normalBias=.04;
+// suelo, poste y línea de 13 200 V
+const gnd=add(S,new T.CircleGeometry(60,48),mGnd,0,0,0,false);gnd.rotation.x=-X90;
+add(S,new T.CylinderGeometry(.14,.18,9.6,20),mWood,0,4.8,0);
+add(S,new T.CylinderGeometry(.03,.03,.3,8),mSteel,0,9.65,0);add(S,new T.LatheGeometry(shed(3,.07,.03,.08),20),mLV,0,9.6,0);
+[6.85,7.35].forEach(y=>{const b=add(S,new T.TorusGeometry(.172,.014,6,24),mSteel,0,y,0);b.rotation.x=X90});
+const pts=[];for(let z=-16;z<=16;z+=2)pts.push(new T.Vector3(0,9.85-.35*(1-Math.cos(Math.PI*z/8))/2,z));
+const line=new T.CatmullRomCurve3(pts);add(S,new T.TubeGeometry(line,120,.02,6,false),mAl,0,0,0);
+const half=new T.CatmullRomCurve3(pts.filter(p=>p.z<=0)).getSpacedPoints(160);
+// transformador cilíndrico de poste (unidades locales de 25 kVA; se escala con la capacidad)
+const RT=.36,HT=.95,TX=new T.Group();S.add(TX);
+add(TX,new T.CylinderGeometry(RT,RT,HT,40),mPaint,0,0,0);
+add(TX,new T.LatheGeometry([new T.Vector2(RT,0),new T.Vector2(RT*.98,.03),new T.Vector2(RT*.6,.075),new T.Vector2(RT*.2,.095),new T.Vector2(0,.1)],40),mPaint,0,HT/2,0);
+[-.3,.3].forEach(y=>{const b=add(TX,new T.TorusGeometry(RT+.004,.008,6,40),mSteel,0,y,0);b.rotation.x=X90});
+add(TX,new T.LatheGeometry(shed(5,.1,.035,.09),24),mHV,0,HT/2+.1,0);add(TX,new T.CylinderGeometry(.02,.02,.07,10),mAl,0,HT/2+.6+.03,0);
+[-.17,0,.17].forEach(z=>{const b=add(TX,new T.LatheGeometry(shed(2,.05,.02,.045),16),mLV,RT-.01,.2,z);b.rotation.z=-X90;const t=add(TX,new T.CylinderGeometry(.012,.012,.05,8),mAl,RT+.115,.2,z);t.rotation.z=X90});
+[-.3,.3].forEach(y=>add(TX,new T.BoxGeometry(.06,.12,.12),mSteel,-RT-.03,y,0));
+const pc=document.createElement('canvas');pc.width=256;pc.height=176;const pt=new T.CanvasTexture(pc);pt.encoding=T.sRGBEncoding;
+const plate=()=>{const x=pc.getContext('2d');x.fillStyle='#cdd3d7';x.fillRect(0,0,256,176);x.strokeStyle='#38434b';x.lineWidth=5;x.strokeRect(4,4,248,168);x.fillStyle='#18212a';x.textAlign='center';x.font='bold 17px sans-serif';x.fillText('TRANSFORMADOR DE POSTE',128,32);x.font='bold 22px sans-serif';x.fillText(kvs()+' kVA',128,66);x.font='15px sans-serif';x.fillText('13 200 V / 240-120 V',128,94);x.fillText('Monofásico, 60 Hz',128,116);x.fillText('Aceite mineral',128,136);x.font='italic 11px sans-serif';x.fillText('Placa ilustrativa',128,160);pt.needsUpdate=true};
+add(TX,new T.CylinderGeometry(RT+.004,RT+.004,.2,16,1,true,-.4,.8),M(0xffffff,.45,.5,{map:pt}),0,-.05,0,false);
+// interior (se ve con «Ver por dentro»): aceite naranja, núcleo y bobinas
+const IN=new T.Group();TX.add(IN);add(IN,new T.CylinderGeometry(RT-.02,RT-.02,HT*.88,32),mOil,0,-HT*.06,0,false);
+[-.13,.13].forEach(x=>{add(IN,new T.BoxGeometry(.05,.62,.05),mCore,x,0,0);add(IN,new T.CylinderGeometry(.075,.075,.5,24),mCoil,x,0,0);add(IN,new T.CylinderGeometry(.105,.105,.5,24,1,true),mCoil,x,0,0)});
+[-.335,.335].forEach(y=>add(IN,new T.BoxGeometry(.36,.06,.06),mCore,0,y,0));IN.visible=false;
+// casas, ventanas y acometidas
+const HZ=[-2.5,2.5,-7.5,7.5,-12.5,12.5],HX=[7.4,7.6,7.2,7.2,7.6,7.4],COLH=['#e7d8c3','#cfd8dc','#d9c5b2','#c9d6c4','#e3cfcf','#d5d0e3'],hg=[],hw=[];
+HZ.forEach((z,i)=>{const g=new T.Group();g.position.set(HX[i],0,z);S.add(g);add(g,new T.BoxGeometry(3.2,2.4,2.8),M(COLH[i],.9,0),0,1.2,0);
+ const rf=add(g,new T.CylinderGeometry(2.08,2.08,3.1,3),M(0x5b3a30,.85,.05),0,2.87,0);rf.rotation.x=-X90;rf.scale.z=.45;
+ add(g,new T.PlaneGeometry(.8,1.8),M(0x4a2f22,.7,0),-1.605,.9,0,false).rotation.y=-X90;
+ const wm=M(0x222c36,.2,.1,{emissive:0xffc880,emissiveIntensity:0});hw.push(wm);[-.8,.8].forEach(dz=>add(g,new T.PlaneGeometry(.7,.8),wm,-1.605,1.4,dz,false).rotation.y=-X90);hg.push(g)});
+// cables y partículas verdes (energía)
+const WG=new T.Group();S.add(WG);let pp=half,hp=[];const NP=36,NH=10,pos=new Float32Array((NP+6*NH)*3),pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(pos,3));
+const pts_=new T.Points(pg,new T.PointsMaterial({color:0x3dff8a,size:.28,map:glow,transparent:true,depthWrite:false,blending:T.AdditiveBlending}));pts_.frustumCulled=false;pts_.renderOrder=5;S.add(pts_);
+const tube=(c,r,m,h)=>{const o=new T.Mesh(new T.TubeGeometry(c,28,r,6,false),m);o.castShadow=true;o.userData.h=h;WG.add(o);return o};
+let sc=1;
+function rewire(){WG.children.slice().forEach(o=>{WG.remove(o);o.geometry.dispose()});TX.updateMatrixWorld(true);
+ const top=TX.localToWorld(new T.Vector3(0,HT/2+.64,0)),a0=new T.Vector3(0,9.84,.05),j=new T.QuadraticBezierCurve3(a0,new T.Vector3(top.x*.5,(a0.y+top.y)/2-.2,.03),top);tube(j,.016,mAl,-1);pp=half.concat(j.getSpacedPoints(30));
+ hp=[];HZ.forEach((hz,i)=>{[-.17,0,.17].forEach((dz,k)=>{const a=TX.localToWorld(new T.Vector3(RT+.14,.2,dz)),b=new T.Vector3(HX[i]-1.45,2.9,hz+(k-1)*.07),c=new T.QuadraticBezierCurve3(a,new T.Vector3((a.x+b.x)/2,(a.y+b.y)/2-.6,(a.z+b.z)/2),b);tube(c,.012,k===1?mAl:mBlk,i);if(k===1)hp[i]=c.getSpacedPoints(60)})})}
+function relayout(){sc=Math.pow(cap()/25000,.22);TX.scale.setScalar(sc);TX.position.set(.16+RT*sc+.02,7.1,0);plate();rewire()}
+// cámara orbital propia: arrastrar gira, rueda o pellizco acercan
+const tg=new T.Vector3(3.4,4.8,0),D={az:.5,el:.2,dist:25};let az=D.az,el=D.el,dist=D.dist;const ptr=new Map();let pd=0;
+cvs.addEventListener('pointerdown',e=>{cvs.setPointerCapture(e.pointerId);ptr.set(e.pointerId,[e.clientX,e.clientY]);cvs.style.cursor='grabbing'});
+cvs.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const o=ptr.get(e.pointerId);if(ptr.size===2){ptr.set(e.pointerId,[e.clientX,e.clientY]);const v=[...ptr.values()],d=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);if(pd)dist=cl(dist*pd/d,6,36);pd=d;return}az-=(e.clientX-o[0])*.006;el=cl(el+(e.clientY-o[1])*.006,-.02,1.25);ptr.set(e.pointerId,[e.clientX,e.clientY])});
+const up=e=>{ptr.delete(e.pointerId);pd=0;if(!ptr.size)cvs.style.cursor='grab'};cvs.addEventListener('pointerup',up);cvs.addEventListener('pointercancel',up);
+cvs.addEventListener('wheel',e=>{e.preventDefault();dist=cl(dist*Math.exp(e.deltaY*.001),6,36)},{passive:false});
+$('#v3r').onclick=()=>{az=D.az;el=D.el;dist=D.dist};
+let cut=false;const cb=$('#v3c');cb.onclick=()=>{cut=!cut;cb.setAttribute('aria-pressed',cut)};
+function fit(){const w=box.clientWidth,h=box.clientHeight;if(!w||!h)return;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+if(window.ResizeObserver)new ResizeObserver(fit).observe(box);else addEventListener('resize',fit);
+// pantalla completa (nativa o capa fija)
+const fb=$('#v3f'),nat=()=>document.fullscreenElement||document.webkitFullscreenElement,fon=()=>nat()===box||box.classList.contains('fs');
+const fsy=()=>{const o=fon();fb.textContent=o?'Salir (Esc)':'Pantalla completa';fb.setAttribute('aria-pressed',o);document.body.classList.toggle('fsl',box.classList.contains('fs'));fit()};
+const fex=()=>{box.classList.remove('fs');if(nat()===box)(document.exitFullscreen||document.webkitExitFullscreen).call(document);fsy()};
+fb.onclick=()=>{if(fon()){fex();return}const rq=box.requestFullscreen||box.webkitRequestFullscreen,k=()=>{box.classList.add('fs');fsy()};if(!rq){k();return}try{const r=rq.call(box);if(r&&r.catch)r.catch(k)}catch(e){k()}};
+['fullscreenchange','webkitfullscreenchange'].forEach(n=>document.addEventListener(n,fsy));addEventListener('keydown',e=>{if(e.key==='Escape'&&box.classList.contains('fs'))fex()});
+// animación
+const CU=new T.Color(.78,.48,.27),HOT=new T.Color(1,.35,.1),OC1=new T.Color(0xe08a2c),OC2=new T.Color(0xb8501a),SK=[[127,166,201],[219,231,239]],SN=[[8,16,28],[24,40,58]],bd=$('#v3b');
+let capSeen=0,vis=true,last=0,phP=0,phH=[0,0,0,0,0,0],bT=0,dayS=-1;
+if(window.IntersectionObserver)new IntersectionObserver(e=>{vis=e[0].isIntersecting}).observe(box);
+function frame(t){raf=requestAnimationFrame(frame);if(!vis||document.hidden){last=t;return}const dt=Math.min((t-last)/1000||.016,.05);last=t;
+ const c=cap();if(c!==capSeen){capSeen=c;relayout()}
+ const Kc=C.P/c,day=auto?Math.max(0,Math.sin((hour-6)/12*Math.PI)):1,ang=auto?(hour-6)/12*Math.PI:1;
+ sun.position.set(-Math.cos(ang)*20,Math.max(2,Math.sin(ang)*20),10);sun.intensity=.1+1.25*day;hemi.intensity=.15+.45*day;R.toneMappingExposure=.5+.55*day;
+ if(Math.abs(day-dayS)>.02){dayS=day;const m=(a,b)=>'rgb('+[0,1,2].map(i=>Math.round(a[i]+(b[i]-a[i])*day)).join(',')+')';box.style.background='linear-gradient('+m(SN[0],SK[0])+','+m(SN[1],SK[1])+')';S.fog.color.setRGB((24+(219-24)*day)/255,(40+(231-40)*day)/255,(58+(239-58)*day)/255)}
+ const to=cut?.16:1;mPaint.opacity+=(to-mPaint.opacity)*(1-Math.exp(-dt*6));mPaint.depthWrite=mPaint.opacity>.95;IN.visible=mPaint.opacity<.9;
+ const h=cl((hs-55)/80,0,1);mCoil.color.copy(CU).lerp(HOT,h);mCoil.emissive.setRGB(h*.6,h*.14,0);mOil.color.lerpColors(OC1,OC2,cl((oil-30)/70,0,1));
+ WG.children.forEach(o=>{if(o.userData.h>=0)o.visible=o.userData.h<H.length});
+ hw.forEach((m,i)=>{const p=i<H.length&&C.per[i]?C.per[i].p:0,tgt=p>0?Math.min(.35+p/3000,1.8):0;m.emissiveIntensity+=(tgt-m.emissiveIntensity)*(1-Math.exp(-dt*5))});hg.forEach((g,i)=>g.visible=i<H.length);
+ const on=C.P>0;phP=(phP+dt*(.02+.2*Math.min(Kc,1.4)))%1;
+ for(let j=0;j<NP;j++){const q=on&&pp.length?pp[(((j/NP+phP)%1)*(pp.length-1))|0]:null;pos[j*3]=q?q.x:0;pos[j*3+1]=q?q.y:-100;pos[j*3+2]=q?q.z:0}
+ for(let i=0;i<6;i++){const p=i<H.length&&C.per[i]?C.per[i].p:0;phH[i]=(phH[i]+dt*(.04+.5*Math.min(p/4000,1.5)))%1;for(let j=0;j<NH;j++){const q=p>0&&hp[i]?hp[i][(((j/NH+phH[i])%1)*(hp[i].length-1))|0]:null,k=(NP+i*NH+j)*3;pos[k]=q?q.x:0;pos[k+1]=q?q.y:-100;pos[k+2]=q?q.z:0}}
+ pg.attributes.position.needsUpdate=true;
+ bT+=dt;if(bT>.25){bT=0;bd.textContent='Aceite '+f(oil,0)+' °C · Punto caliente '+f(hs,0)+' °C · Carga '+f(Kc*100,0)+' % · '+LV[lvl(hs,Kc)][1]}
+ const aspect=cam.aspect,d=dist*(aspect<1.2?1.2/aspect*.8:1);cam.position.set(tg.x+d*Math.sin(az)*Math.cos(el),tg.y+d*Math.sin(el),tg.z+d*Math.cos(az)*Math.cos(el));cam.lookAt(tg);R.render(S,cam)}
+let raf=0;fit();relayout();raf=requestAnimationFrame(frame);
+addEventListener('pagehide',()=>{cancelAnimationFrame(raf);R.dispose()});
+}catch(e){msg.textContent='La vista 3D no pudo iniciarse; el resto del simulador funciona igual.';console.error(e)}
+})();
+const cvE=$('#cv');cvE.addEventListener('pointermove',e=>{const r=cvE.getBoundingClientRect(),dx=(r.width-58)/(MAXS-1),k=S.length-1-Math.round((r.width-10-(e.clientX-r.left))/dx);hov=k>=0&&k<S.length?k:-1;chart()});cvE.addEventListener('pointerleave',()=>{hov=-1;chart()});
+if(window.ResizeObserver)new ResizeObserver(()=>chart()).observe(cvE);
 refresh();setInterval(tick,100);
 </script>
 </body>
